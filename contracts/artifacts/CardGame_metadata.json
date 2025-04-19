@@ -1,0 +1,127 @@
+{
+	"compiler": {
+		"version": "0.8.28+commit.7893614a"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_inventory",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "user",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "cardId",
+						"type": "uint256"
+					}
+				],
+				"name": "CardWon",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "inventory",
+				"outputs": [
+					{
+						"internalType": "contract CardInventory",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "spinWheel",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalCardTypes",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"CardGame.sol": "CardGame"
+		},
+		"evmVersion": "cancun",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"details": {
+				"constantOptimizer": false,
+				"cse": false,
+				"deduplicate": false,
+				"inliner": false,
+				"jumpdestRemover": false,
+				"orderLiterals": false,
+				"peephole": false,
+				"simpleCounterForLoopUncheckedIncrement": true,
+				"yul": false
+			},
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"CardGame.sol": {
+			"keccak256": "0xd610da504318077c6c94571e746e5dc6caa0b165a720dba99917c69f59f595c7",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://5b65c66b70ec033a08709b2062e2c162de17cdb54ed97856b70afb082fef51e3",
+				"dweb:/ipfs/QmS18fX9LHMVCfaeqdXaxsqejdhRKskEgBTdNnd485R63a"
+			]
+		},
+		"CardInventory.sol": {
+			"keccak256": "0x01c80db43ea035f45b0e8d628ac6d96624b438283db1a028cbf7c03dbbb0d845",
+			"license": "GPL-3.0",
+			"urls": [
+				"bzz-raw://a74736717bbb9ec6fae143864c29666906616529cedb93b5015991b1528c531c",
+				"dweb:/ipfs/QmSu563K6Z5CE6EG7ujgiP9WTpDGwikXMEW3Vs6nT5sgp1"
+			]
+		}
+	},
+	"version": 1
+}

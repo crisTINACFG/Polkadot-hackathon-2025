@@ -1,0 +1,45 @@
+# node_modules (root + sub‑projects)
+node_modules/
+frontend/node_modules/
+contracts/node_modules/
+
+# lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# build outputs
+/dist/
+/build/
+frontend/dist/
+frontend/build/
+contracts/build/
+contracts/dist/
+
+/**/ethers/solidity artifacts
+**/*.abi.json
+**/*.dbg.json
+
+# logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# environment
+.env*
+!.env.example
+
+# test coverage
+coverage/
+frontend/coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor settings
+.vscode/
+.idea/
+*.iml
