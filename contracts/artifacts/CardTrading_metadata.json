@@ -128,6 +128,19 @@
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -168,11 +181,11 @@
 	},
 	"sources": {
 		"CardTrading.sol": {
-			"keccak256": "0xff282ae294ebc65c77bf84cea1d01dba6ab72663c0fba91b098a95b144494ab4",
+			"keccak256": "0xeb24e4d552399fc89280b7ed6272d890b3c8737e1e77e57e91eb764e5edef340",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://7dd6254d68cf18adac1a9a8a2de0b70ad8a33d7529c5c24824265d8c85eb3ea3",
-				"dweb:/ipfs/QmPXCezBYQZkRvCx98uNEQdsExfjJTYis9wLAWYjVz8K1m"
+				"bzz-raw://b414cd95d880656fbb8f1a33817c2333caa317c07a63ef4840403d7c071019d0",
+				"dweb:/ipfs/Qme19nRZk8TsS6mS2vcB3D4Sqg5H1pX3UmeWLW1kuLzGWB"
 			]
 		}
 	},

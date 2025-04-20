@@ -5,8 +5,8 @@ import { useInventoryManager } from "./hooks/useInventoryManager";
 import "./App.css";
 
 // Update to the correctly deployed addresses in lowercase to match export
-const CARD_TRADING_ADDRESS = "d56e31f4fdeef444eb3b26b4d80d498ae098923f";
-const INVENTORY_MANAGER_ADDRESS = "d20eac04dfab9def61791248d2644c086cf73db6";
+const CARD_TRADING_ADDRESS = "1d1ed54ee5942095f3e3f68593941c462c3b7221";
+const INVENTORY_MANAGER_ADDRESS = "cce7ecb3cd989e8e936f27ec9858092fd521318f";
 
 function App() {
   if (!(CARD_TRADING_ADDRESS in contracts) || !(INVENTORY_MANAGER_ADDRESS in contracts)) {
@@ -20,7 +20,7 @@ function App() {
   const [userAddress, setUserAddress] = useState<string>("");
   const [flashingCard, setFlashingCard] = useState<number | null>(null);
 
-  const { status, listings, setOfferCardId, setRequestCardId, createListing, acceptListing, fetchListings } = useCardTrading(cardTradingData);
+  const { status, listings, errorMessage: tradingErrorMessage, setOfferCardId, setRequestCardId, createListing, acceptListing, fetchListings } = useCardTrading(cardTradingData);
   const { inventory, hasCard, status: inventoryStatus, lastReceivedCard, isProcessing, currentAddress, errorMessage, connectWallet, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
 
   // Refresh listings when current address changes
@@ -132,6 +132,12 @@ function App() {
         >
           {status === Status.Loading ? "Creating..." : "Create Listing"}
         </button>
+        
+        {status === Status.Revert && tradingErrorMessage && (
+          <div className="text-red-500 mt-2">
+            Failed to create listing: {tradingErrorMessage}
+          </div>
+        )}
       </div>
 
       {/* Active Listings Section */}
@@ -167,7 +173,9 @@ function App() {
         <div className="text-green-500 mb-4">Transaction successful!</div>
       )}
       {status === Status.Revert && (
-        <div className="text-red-500 mb-4">Transaction failed. Please try again.</div>
+        <div className="text-red-500 mb-4">
+          Transaction failed: {tradingErrorMessage || 'Please try again.'}
+        </div>
       )}
     </div>
   );

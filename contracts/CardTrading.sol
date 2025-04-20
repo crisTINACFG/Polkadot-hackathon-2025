@@ -5,6 +5,7 @@ interface IInventoryManager {
     function addCard(address to, uint cardId) external;
     function transferCards(address from, address to, uint cardId, uint amount) external;
     function hasCard(address user, uint cardId, uint amount) external view returns (bool);
+    function setTradingContract(address _contract) external;
 }
 
 contract CardTrading {
@@ -17,9 +18,17 @@ contract CardTrading {
 
     Listing[] public listings;
     IInventoryManager public inventory;
+    address public owner;
 
     constructor(address inventoryAddress) {
         inventory = IInventoryManager(inventoryAddress);
+        owner = msg.sender;
+        // Try to set this contract as the trading contract in InventoryManager
+        try inventory.setTradingContract(address(this)) {
+            // Successfully set this contract as the trading contract
+        } catch {
+            // The trading contract might already be set, that's okay
+        }
     }
 
     function createListing(uint offerCardId, uint requestCardId) external {

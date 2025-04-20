@@ -101,6 +101,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -193,11 +206,11 @@
 	},
 	"sources": {
 		"InventoryManager.sol": {
-			"keccak256": "0xaf9acc902e6edeca428fc5cc1ccc696217e0a73523e97319f6c27252e8cb93e2",
+			"keccak256": "0xa96683eb02a4779ce5c7f871c807d3d007f9bc4afcf1dbdf31c12dd0835d75aa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://333b0cf58fd72fcc7d4dcc69a4d01466176714c01808c2bbad6ef667d5155378",
-				"dweb:/ipfs/QmRxP72pnQushssHrd34QuaKuSmK4PhtiHVHKWaBhXNZhL"
+				"bzz-raw://4f23b7d60ef85292d1264f9975535448099789264e2a59ea57730fb05d5d004a",
+				"dweb:/ipfs/QmdLtXzLqk64TSEXxLkyWAyrc1HWnBarTdq3LSBjt8NXY3"
 			]
 		}
 	},

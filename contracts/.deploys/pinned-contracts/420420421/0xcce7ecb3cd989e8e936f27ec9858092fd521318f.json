@@ -1,6 +1,6 @@
 {
   "name": "InventoryManager",
-  "address": "0xd20eac04dfab9def61791248d2644c086cf73db6",
+  "address": "0xcce7ecb3cd989e8e936f27ec9858092fd521318f",
   "abi": [
     {
       "inputs": [
@@ -140,6 +140,19 @@
     },
     {
       "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "tradingContract",
       "outputs": [
         {
@@ -153,5 +166,5 @@
     }
   ],
   "filePath": " - connect to localhost - /InventoryManager.sol",
-  "pinnedAt": 1745113137903
+  "pinnedAt": 1745114602944
 }

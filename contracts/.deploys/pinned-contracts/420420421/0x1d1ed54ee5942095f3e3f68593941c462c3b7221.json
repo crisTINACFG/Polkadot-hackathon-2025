@@ -1,6 +1,6 @@
 {
   "name": "CardTrading",
-  "address": "0xd56e31f4fdeef444eb3b26b4d80d498ae098923f",
+  "address": "0x1d1ed54ee5942095f3e3f68593941c462c3b7221",
   "abi": [
     {
       "inputs": [
@@ -125,8 +125,21 @@
       ],
       "stateMutability": "view",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
   ],
   "filePath": " - connect to localhost - /CardTrading.sol",
-  "pinnedAt": 1745113219458
+  "pinnedAt": 1745114625375
 }
