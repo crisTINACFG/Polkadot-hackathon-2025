@@ -91,51 +91,19 @@ export function useInventoryManager(contractData: ContractData) {
             setErrorMessage(null);
             
             try {
-                // Force MetaMask to show accounts selection
-                await window.ethereum.request({ 
-                    method: 'wallet_requestPermissions',
-                    params: [{ eth_accounts: {} }]
-                });
-                
-                // Get latest accounts
-                const accounts = await window.ethereum.request({ 
-                    method: 'eth_requestAccounts' 
-                });
-                
-                if (accounts.length === 0) {
-                    throw new Error('No accounts found');
-                }
-                
-                const selectedAddress = accounts[0];
-                setCurrentAddress(selectedAddress);
-                
-                // Check wallet balance
+                // Skip redundant account requests if we already have the current address
                 const provider = new BrowserProvider(window.ethereum);
-                const balance = await provider.getBalance(selectedAddress);
-                console.log('Wallet balance:', balance.toString());
-                
-                const signer = await provider.getSigner();
-                const signerAddress = await signer.getAddress();
-                console.log('Signer address:', signerAddress);
-                console.log('Selected address:', selectedAddress);
+                let selectedAddress = currentAddress;
                 
                 // Create contract instance
+                const signer = await provider.getSigner();
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
                 // Generate random card ID (0-14 to match our UI cat images)
                 const randomCardId = Math.floor(Math.random() * 15);
                 console.log('Adding card:', randomCardId, 'for address:', selectedAddress);
                 
-                // Try to estimate gas first to check if the transaction would succeed
-                try {
-                    const gasEstimate = await contract.addCard.estimateGas(selectedAddress, randomCardId);
-                    console.log('Gas estimate successful:', gasEstimate.toString());
-                } catch (estimateError: any) {
-                    console.error('Gas estimation failed:', estimateError);
-                    throw new Error(`Transaction would fail: ${estimateError.message}`);
-                }
-                
-                // Send the transaction
+                // Send the transaction directly without gas estimation
                 const response: ContractTransactionResponse = await contract.addCard(
                     selectedAddress,
                     randomCardId
@@ -143,6 +111,7 @@ export function useInventoryManager(contractData: ContractData) {
                 
                 console.log('Transaction sent with hash:', response.hash);
                 
+                // Wait for transaction confirmation
                 await response.wait();
                 console.log('Transaction confirmed');
                 

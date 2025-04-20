@@ -43,6 +43,20 @@ const catImages = [
     { id: 14, name: 'Wizard', image: wizard, rarity: 'rare' }
 ];
 
+// Generate fun cat facts
+const catFacts = [
+  "Did you know? Cats have 5 toes on their front paws but only 4 on their back paws!",
+  "Cats sleep for 70% of their lives - that's 16 hours a day!",
+  "A group of cats is called a 'clowder'!",
+  "Cats can't taste sweetness!",
+  "Cats can make over 100 different vocal sounds!",
+  "Purring helps cats heal bones and muscles!",
+  "Cats can jump up to 6 times their length!",
+  "The record for the longest cat was 48.5 inches!",
+  "A cat's nose print is as unique as a human's fingerprint!",
+  "Meowing is how cats communicate with humans, not other cats!"
+];
+
 // Preload images to prevent glitchy appearance
 const preloadImages = () => {
   catImages.forEach(cat => {
@@ -58,10 +72,20 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
   const [showConfetti, setShowConfetti] = useState(false);
   const [shouldSpin, setShouldSpin] = useState(false);
   const [spinSpeed, setSpinSpeed] = useState(200);
+  const [currentFact, setCurrentFact] = useState(0);
   const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const spinStepsRef = useRef(0);
   const totalStepsRef = useRef(0);
   const targetCardRef = useRef<number | null>(null);
+  
+  // Rotate cat facts every 8 seconds
+  useEffect(() => {
+    const factInterval = setInterval(() => {
+      setCurrentFact(prev => (prev + 1) % catFacts.length);
+    }, 8000);
+    
+    return () => clearInterval(factInterval);
+  }, []);
 
   // Preload all images when component mounts
   useEffect(() => {
@@ -93,6 +117,24 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
     };
   }, []);
 
+  const handleSpin = async () => {
+    if (isSpinning || isProcessing || !isConnected) return;
+    
+    setSelectedCat(null);
+    setShowConfetti(false);
+    
+    try {
+      // Tell the component to start spinning after transaction completes
+      setShouldSpin(true);
+      
+      // Call the blockchain transaction
+      await onAddRandomCard();
+    } catch (error) {
+      console.error("Error during spinning:", error);
+      setShouldSpin(false);
+    }
+  };
+
   const startSpinAnimation = (finalCatId: number) => {
     setIsSpinning(true);
     
@@ -101,8 +143,8 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
       clearInterval(spinIntervalRef.current);
     }
     
-    // Reduced number of spins (between 2-3 full rotations)
-    const spins = Math.floor(Math.random() * 2) + 1.5;
+    // Reduced number of spins (between 1-2 full rotations for faster experience)
+    const spins = Math.floor(Math.random() * 1) + 1;
     
     // Store the total steps and target card for reference
     totalStepsRef.current = Math.floor(spins * catImages.length + 
@@ -111,7 +153,7 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
     targetCardRef.current = finalCatId % catImages.length;
     
     // Faster starting speed
-    setSpinSpeed(50);
+    setSpinSpeed(40);
     
     // Start the spinning animation
     spinStep();
@@ -139,42 +181,42 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
     const progress = spinStepsRef.current / totalStepsRef.current;
     
     if (progress < 0.6) {
-      // Fast spinning for most of the animation - faster than before
-      nextDelay = 50;
+      // Fast spinning for most of the animation - even faster
+      nextDelay = 30;
     } else if (progress < 0.8) {
-      // Start slowing down - faster than before
-      nextDelay = 80;
+      // Start slowing down - faster
+      nextDelay = 60;
     } else if (progress < 0.9) {
-      // Even slower - faster than before
-      nextDelay = 120;
+      // Even slower - faster
+      nextDelay = 90;
     } else {
-      // Final slowdown - faster than before
-      nextDelay = 180;
+      // Final slowdown - faster
+      nextDelay = 120;
     }
     
     // Schedule the next step with the calculated delay
     spinIntervalRef.current = setTimeout(spinStep, nextDelay);
   };
 
-  const handleSpin = async () => {
-    if (isSpinning || isProcessing || !isConnected) return;
-    
-    setSelectedCat(null);
-    setShowConfetti(false);
-    
-    try {
-      // Tell the component to start spinning after transaction completes
-      setShouldSpin(true);
-      // Call the blockchain transaction
-      await onAddRandomCard();
-    } catch (error) {
-      console.error("Error during spinning:", error);
-      setShouldSpin(false);
-    }
+  // Handle clicking on a preview cat
+  const handlePreviewClick = (catId: number) => {
+    setCurrentIndex(catId);
   };
 
   // Add a dynamic className based on spinning state for CSS animations
   const carouselTrackClass = `carousel-track ${isSpinning ? 'spinning' : ''}`;
+
+  // Get 6 random cats for the preview (ensuring they're different each time)
+  const getPreviewCats = () => {
+    const shuffled = [...catImages].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 6);
+  };
+
+  // Memoize the preview cats so they don't change on every render
+  const previewCats = React.useMemo(() => getPreviewCats(), []);
+
+  // We'll use all cat images for the preview instead of random ones
+  const allCats = React.useMemo(() => catImages, []);
 
   return (
     <div className="cat-carousel">
@@ -195,6 +237,7 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
         </div>
       )}
       
+      {/* Main carousel when spinning */}
       <div className="carousel-container">
         <div 
           className={carouselTrackClass}
@@ -213,6 +256,34 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
           ))}
         </div>
       </div>
+
+      {/* Cat fact banner */}
+      <div className="cat-tagline">
+        {catFacts[currentFact]}
+      </div>
+      
+      {/* Cat showcase preview (always visible now) */}
+      <div className="cat-showcase-container">
+        <div className="cat-showcase">
+          {allCats.map((cat, index) => (
+            <div 
+              key={cat.id} 
+              className="preview-cat"
+              onClick={() => handlePreviewClick(cat.id)}
+              style={{ 
+                '--cat-delay': (index * 0.2).toString(),
+                '--cat-rotate': (Math.random() * 10 - 5).toString()
+              } as React.CSSProperties}
+            >
+              <img src={cat.image} alt={cat.name} />
+              <div className="preview-cat-name">{cat.name}</div>
+              <div className={`preview-cat-rarity ${cat.rarity}`}>
+                {cat.rarity}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       
       <button 
         className="spin-button"
@@ -221,12 +292,6 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
       >
         {!isConnected ? 'Connect Wallet First' : (isProcessing ? 'Processing Transaction...' : (isSpinning ? 'Spinning...' : 'Spin for a Cat!'))}
       </button>
-
-      {selectedCat !== null && (
-        <div className="selection-banner">
-          You got a {catImages.find(cat => cat.id === selectedCat)?.name || `Cat ${selectedCat}`}!
-        </div>
-      )}
     </div>
   );
 };

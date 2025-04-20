@@ -96,8 +96,11 @@
 }
 
 .rarity.rare {
-  background-color: #ffb6c1;
-  color: #ff4d6d;
+  background: linear-gradient(to right, #ffd700, #f0c14b, #ffd700);
+  color: #8B6914;
+  border: 1px solid #DAA520;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shimmer 2s infinite;
 }
 
 .rarity.epic {
@@ -106,11 +109,6 @@
 }
 
 .rarity.legendary {
-  background-color: #ff6b8b;
-  color: white;
-}
-
-.rarity.mythic {
   background: linear-gradient(45deg, #ff6b8b, #ff85a2, #ffb6c1, #ffe5e9, #ff6b8b);
   background-size: 400% 400%;
   animation: rainbow 3s ease infinite;
@@ -220,4 +218,249 @@
     transform: translateY(100vh) rotate(360deg);
     opacity: 0;
   }
+}
+
+/* Cat preview styles that will override the ones in App.css */
+.cat-showcase-container {
+  width: 100%;
+  max-width: 800px; /* Much wider container to show ~6 cats */
+  overflow-x: auto;
+  overflow-y: hidden; /* Prevent vertical scrolling */
+  padding: 10px 0;
+  margin: 20px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #ff85a2 #ffe5e9;
+  position: relative;
+}
+
+.cat-showcase-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cat-showcase-container::-webkit-scrollbar-track {
+  background: #ffe5e9;
+  border-radius: 10px;
+}
+
+.cat-showcase-container::-webkit-scrollbar-thumb {
+  background: #ff85a2;
+  border-radius: 10px;
+}
+
+.cat-showcase {
+  display: flex;
+  gap: 15px; /* Smaller gap */
+  margin: 0;
+  padding: 5px 15px; /* Less padding on sides */
+  padding-left: 0; /* No left padding to ensure first cat is visible */
+  padding-right: 30px; /* Extra padding at the end to ensure last item is fully visible */
+  flex-wrap: nowrap;
+  width: max-content;
+}
+
+.preview-cat {
+  width: 120px !important; /* Much smaller width */
+  height: 150px !important; /* Adjusted height */
+  border-radius: 12px;
+  background-color: white;
+  padding: 10px; /* Less padding */
+  box-shadow: 0 4px 10px rgba(255, 105, 140, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  transform-origin: center bottom;
+  animation: cat-bounce 3s infinite;
+  animation-delay: calc(var(--cat-delay) * 1s);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center content vertically */
+  cursor: pointer;
+  margin: 0;
+  flex: 0 0 120px !important; /* Updated flex-basis to match width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.preview-cat:hover {
+  transform: translateY(-8px) rotate(5deg);
+  box-shadow: 0 8px 15px rgba(255, 105, 140, 0.25);
+}
+
+.preview-cat img {
+  width: 80px !important; /* Smaller images */
+  height: 80px !important;
+  object-fit: contain;
+  margin-bottom: 5px; /* Less margin */
+}
+
+.preview-cat-name {
+  font-size: 0.9rem; /* Smaller font */
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.preview-cat-rarity {
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+  white-space: nowrap;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Common: Pink */
+.preview-cat-rarity.common {
+  background-color: #ffccd5;
+  color: #ff6b8b;
+  border: 1px solid #ffb6c1;
+}
+
+/* Rare: Gold */
+.preview-cat-rarity.rare {
+  background: linear-gradient(to right, #ffd700, #f0c14b, #ffd700);
+  color: #8B6914;
+  border: 1px solid #DAA520;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shimmer 2s infinite;
+}
+
+/* Epic: Purple/Blue */
+.preview-cat-rarity.epic {
+  background: linear-gradient(to right, #9370DB, #8A2BE2);
+  color: white;
+  border: 1px solid #800080;
+}
+
+/* Legendary: Rainbow - softer, more pastel version */
+.preview-cat-rarity.legendary {
+  background: linear-gradient(45deg, #ff9aa2, #ffb7b2, #ffdac1, #e2f0cb, #b5ead7, #c7ceea, #ff9aa2);
+  background-size: 400% 400%;
+  animation: rainbow 3s ease infinite;
+  color: #464646;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.4);
+}
+
+/* Legendary: Rainbow effect that matches the gallery */
+.preview-cat-rarity.legendary {
+  background: linear-gradient(90deg, #ff3d6e, #ffcc00, #33cc33, #3399ff, #cc33ff, #ff3d6e);
+  background-size: 300% 100%;
+  animation: rainbow-border 4s linear infinite;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  border: none;
+  position: relative;
+  z-index: 1;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(255, 61, 110, 0.4);
+}
+
+@keyframes rainbow-border {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+@keyframes gold-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes celestial {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+/* Update main carousel rarity tags to match preview styles */
+.rarity.common {
+  background-color: #ffccd5;
+  color: #ff6b8b;
+  border: 1px solid #ffb6c1;
+}
+
+/* Rare: Gold */
+.rarity.rare {
+  background: linear-gradient(to right, #ffd700, #f0c14b, #ffd700);
+  color: #8B6914;
+  border: 1px solid #DAA520;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shimmer 2s infinite;
+}
+
+/* Epic: Purple/Blue */
+.rarity.epic {
+  background: linear-gradient(to right, #9370DB, #8A2BE2);
+  color: white;
+  border: 1px solid #800080;
+}
+
+/* Legendary: matching the gallery style */
+.rarity.legendary {
+  background: linear-gradient(90deg, #ff3d6e, #ffcc00, #33cc33, #3399ff, #cc33ff, #ff3d6e);
+  background-size: 300% 100%;
+  animation: rainbow-border 4s linear infinite;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  border: none;
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(255, 61, 110, 0.4);
+}
+
+/* Rare: Enhanced Gold styling from marketplace */
+.rarity.rare {
+  background: linear-gradient(45deg, #d4af37, #f8e484, #d4af37);
+  background-size: 200% 100%;
+  color: #333;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shine 2s infinite alternate;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* Rare: Enhanced Gold styling from marketplace */
+.preview-cat-rarity.rare {
+  background: linear-gradient(45deg, #d4af37, #f8e484, #d4af37);
+  background-size: 200% 100%;
+  color: #333;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shine 2s infinite alternate;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* Add the gold-shine animation */
+@keyframes gold-shine {
+  from {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    background-position: 0% 50%;
+  }
+  to {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.3);
+    background-position: 100% 50%;
+  }
+}
+
+/* Apply the enhanced marketplace gold style to both main carousel and preview */
+.rarity.rare, .preview-cat-rarity.rare {
+  background: linear-gradient(45deg, #d4af37, #f8e484, #d4af37);
+  background-size: 200% 100%;
+  color: #333;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  animation: gold-shine 2s infinite alternate;
+  border: 1px solid rgba(212, 175, 55, 0.5);
 } 

@@ -451,3 +451,260 @@ button:disabled {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
+
+/* Cat showcase preview for the idle state */
+.cat-showcase {
+  display: flex;
+  gap: 30px; /* More space between items */
+  margin: 0;
+  padding: 5px 30px; /* More padding on sides to prevent cut-off */
+  flex-wrap: nowrap;
+  width: max-content;
+  padding-right: 40px; /* Extra padding at the end to ensure last item is fully visible */
+}
+
+.preview-cat {
+  width: 200px; /* Smaller width */
+  height: 200px; /* Smaller height */
+  border-radius: 15px;
+  background-color: white;
+  padding: 15px; /* Less padding */
+  box-shadow: 0 4px 10px rgba(255, 105, 140, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  transform-origin: center bottom;
+  animation: cat-bounce 3s infinite;
+  animation-delay: calc(var(--cat-delay) * 1s);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center content vertically */
+  cursor: pointer;
+  margin: 0;
+  flex: 0 0 200px; /* Updated flex-basis to match width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.preview-cat:hover {
+  transform: translateY(-10px) rotate(5deg);
+  box-shadow: 0 8px 15px rgba(255, 105, 140, 0.25);
+}
+
+.preview-cat img {
+  width: 120px; /* Smaller images */
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 8px; /* Less margin */
+}
+
+.preview-cat-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.preview-cat-rarity {
+  font-size: 0.9rem;
+  padding: 4px 12px;
+  border-radius: 10px;
+  margin-top: 8px;
+  white-space: nowrap;
+}
+
+.preview-cat-rarity.common {
+  background-color: #ffe5e9;
+  color: #ff6b8b;
+}
+
+.preview-cat-rarity.rare {
+  background-color: #ffb6c1;
+  color: #ff4d6d;
+}
+
+.preview-cat-rarity.legendary {
+  background-color: #ff6b8b;
+  color: white;
+}
+
+/* Pulse effect for call-to-action */
+.spin-button {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 155, 179, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 155, 179, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 155, 179, 0);
+  }
+}
+
+@keyframes cat-bounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(calc(var(--cat-rotate) * 1deg));
+  }
+}
+
+/* Improved carousel styling */
+.carousel-container {
+  position: relative;
+  overflow: visible !important;
+}
+
+.carousel-container::before,
+.carousel-container::after {
+  content: "✨";
+  position: absolute;
+  top: 50%;
+  font-size: 2rem;
+  z-index: 2;
+  animation: twinkle 1.5s infinite;
+}
+
+.carousel-container::before {
+  left: -30px;
+  animation-delay: 0.5s;
+}
+
+.carousel-container::after {
+  right: -30px;
+  animation-delay: 0.8s;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Fun tagline for the spin section */
+.cat-tagline {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  font-weight: bold;
+  margin: 15px 0;
+  text-align: center;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  position: relative;
+  animation: float-text 3s ease-in-out infinite;
+}
+
+@keyframes float-text {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Cat showcase preview for the idle state */
+.cat-showcase-container {
+  width: 100%;
+  max-width: 800px; /* Much wider container to show ~6 cats */
+  overflow-x: auto;
+  overflow-y: hidden; /* Prevent vertical scrolling */
+  padding: 10px 0;
+  margin: 20px 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #ff85a2 #ffe5e9;
+  position: relative;
+}
+
+/* Clear the arrow indicators */
+.cat-showcase-container::before,
+.cat-showcase-container::after {
+  display: none;
+}
+
+/* Add back scrollbar styling */
+.cat-showcase-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.cat-showcase-container::-webkit-scrollbar-track {
+  background: #ffe5e9;
+  border-radius: 10px;
+}
+
+.cat-showcase-container::-webkit-scrollbar-thumb {
+  background: #ff85a2;
+  border-radius: 10px;
+}
+
+.cat-showcase {
+  display: flex;
+  gap: 15px; /* Smaller gap */
+  margin: 0;
+  padding: 5px 15px; /* Less padding on sides */
+  padding-left: 0; /* No left padding to ensure first cat is visible */
+  padding-right: 30px; /* Extra padding at the end to ensure last item is fully visible */
+  flex-wrap: nowrap;
+  width: max-content;
+}
+
+.preview-cat {
+  width: 120px; /* Much smaller width */
+  height: 150px; /* Adjusted height */
+  border-radius: 12px;
+  background-color: white;
+  padding: 10px; /* Less padding */
+  box-shadow: 0 4px 10px rgba(255, 105, 140, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  transform-origin: center bottom;
+  animation: cat-bounce 3s infinite;
+  animation-delay: calc(var(--cat-delay) * 1s);
+  position: relative;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center content vertically */
+  cursor: pointer;
+  margin: 0;
+  flex: 0 0 120px; /* Updated flex-basis to match width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.preview-cat img {
+  width: 80px; /* Smaller images */
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 5px; /* Less margin */
+}
+
+.preview-cat-name {
+  font-size: 0.9rem; /* Smaller font */
+  font-weight: bold;
+  color: var(--text-color);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.preview-cat-rarity {
+  font-size: 0.75rem; /* Smaller font */
+  padding: 3px 8px;
+  border-radius: 10px;
+  margin-top: 5px;
+  white-space: nowrap;
+}
