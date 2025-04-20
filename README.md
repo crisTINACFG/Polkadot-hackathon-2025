@@ -8,8 +8,6 @@ The system leverages blockchain technology to ensure immutable ownership records
 
 *This project was created for the Polkadot x EasyA Hackathon 2025.*
 
-![miauD screenshot](./frontend/src/assets/screenshot.png)
-
 ## 🌟 Features
 
 - **Cat Card Collection**: Spin to receive random cat cards with different rarities (Common, Rare, Legendary)
@@ -21,28 +19,18 @@ The system leverages blockchain technology to ensure immutable ownership records
 ## 📸 Media Showcase
 
 ### Screenshots
+![MedalTVScreenRecording20250420114011-tr-edit-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/d7c434ef-5eda-4550-90f5-b18549f72795)
+![image](https://github.com/user-attachments/assets/9328bd76-4b6b-42af-baf1-df15e533fec6)
+![image](https://github.com/user-attachments/assets/eba791e2-78f9-4ced-8638-26f4a3e9991c)
+![image](https://github.com/user-attachments/assets/a43fb56d-8615-488c-a834-203f8f5881ee)
 
-<div align="center">
-  <img src="screenshots/spinning-mechanism.png" alt="Cat Card Spinning Mechanism" width="600"/>
-  <p><em>The spinning wheel mechanism for obtaining new cat cards with visual animation effects</em></p>
-</div>
 
-<div align="center">
-  <img src="screenshots/gallery-view.png" alt="Gallery of Collected Cats" width="600"/>
-  <p><em>User's personal gallery displaying their collection with rarity indicators</em></p>
-</div>
 
-<div align="center">
-  <img src="screenshots/marketplace-trading.png" alt="Marketplace Trading Interface" width="600"/>
-  <p><em>Peer-to-peer marketplace for trading cat cards between users</em></p>
-</div>
 
 ### Video Demonstration
 
 <div align="center">
-  <a href="https://youtu.be/your-video-id-here" target="_blank">
-    <img src="screenshots/video-thumbnail.png" alt="miauD Demo Video" width="600"/>
-  </a>
+  </a>(https://youtu.be/78SroANHoPM?si=j_EytivRcFXsWlHt)
   <p><em>Click to watch a full demonstration of miauD's features (YouTube)</em></p>
 </div>
 
