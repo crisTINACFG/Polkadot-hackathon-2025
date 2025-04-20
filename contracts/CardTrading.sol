@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IInventoryManager {
+    function addCard(address to, uint cardId) external;
+    function transferCards(address from, address to, uint cardId, uint amount) external;
+    function hasCard(address user, uint cardId, uint amount) external view returns (bool);
+}
+
+contract CardTrading {
+    struct Listing {
+        address seller;
+        uint offerCardId;
+        uint requestCardId;
+        bool active;
+    }
+
+    Listing[] public listings;
+
+    IInventoryManager public inventory;
+
+    constructor(address inventoryAddress) {
+        inventory = IInventoryManager(inventoryAddress);
+    }
+
+    function createListing(uint offerCardId, uint requestCardId) external {
+        require(offerCardId < 9 && requestCardId < 9, "Invalid card ID");
+        require(inventory.hasCard(msg.sender, offerCardId, 1), "You don't have the offered card");
+
+        listings.push(Listing({
+            seller: msg.sender,
+            offerCardId: offerCardId,
+            requestCardId: requestCardId,
+            active: true
+        }));
+    }
+
+    function acceptListing(uint listingId) external {
+        require(listingId < listings.length, "Invalid listing ID");
+        Listing storage listing = listings[listingId];
+        require(listing.active, "Listing inactive");
+        require(msg.sender != listing.seller, "Can't accept your own listing");
+
+        require(inventory.hasCard(msg.sender, listing.requestCardId, 1), "You don't have the requested card");
+
+        // Swap cards
+        inventory.transferCards(msg.sender, listing.seller, listing.requestCardId, 1);
+        inventory.transferCards(listing.seller, msg.sender, listing.offerCardId, 1);
+
+        listing.active = false;
+    }
+
+    function getAllListings() external view returns (Listing[] memory) {
+        return listings;
+    }
+}

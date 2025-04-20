@@ -1,0 +1,21 @@
+{
+  "name": "contracts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "export": "npx tsc && node dist/exportContracts.js",
+    "build": "npx tsc && node dist/build.js",
+    "deploy-contracts": "npx tsc && node dist/deploy.js"
+  },
+  "main": "dist/index.js",
+  "devDependencies": {
+    "ethers": "^6.13.4",
+    "@parity/revive": "^0.0.7",
+    "@polkadot-labs/hdkd-helpers": "^0.0.10",
+    "@polkadot-labs/hdkd": "^0.0.10",
+    "micro-sr25519": "^0.1.0",
+    "@scure/bip32": "^1.6.1",
+    "@scure/bip39": "^1.5.1"
+  }
+}

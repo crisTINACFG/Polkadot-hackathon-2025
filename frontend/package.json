@@ -1,0 +1,36 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx tsc -b && npx vite build",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint . --fix",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@remix-project/remixd": "^0.6.40",
+    "@eslint/js": "^9.14.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.14.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.12.2",
+    "vite": "^5.4.10"
+  }
+}

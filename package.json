@@ -1,0 +1,22 @@
+{
+  "name": "miauD",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "remixd": "npx remixd -s ./contracts -u https://remix.polkadot.io",
+    "contracts:export": "pnpm --filter=contracts export",
+    "contracts:build": "pnpm --filter=contracts build",
+    "contracts:deploy": "pnpm --filter=contracts deploy-contracts",
+    "frontend:dev": "pnpm --filter=frontend dev",
+    "frontend:build": "pnpm --filter=frontend build",
+    "frontend:lint": "pnpm --filter=frontend lint",
+    "frontend:lint:fix": "pnpm --filter=frontend lint:fix",
+    "frontend:preview": "pnpm --filter=frontend preview"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@remix-project/remixd": "^0.6.40",
+    "typescript": "~5.6.2"
+  }
+}
