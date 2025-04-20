@@ -28,14 +28,14 @@
 .carousel-track {
   display: flex;
   width: 100%;
-  transition: transform 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  transition: transform 0.3s cubic-bezier(0.215, 0.610, 0.355, 1.000);
   will-change: transform;
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
 
 .carousel-track.spinning {
-  transition: transform 0.15s linear;
+  transition: transform 0.08s linear;
 }
 
 .cat-card {

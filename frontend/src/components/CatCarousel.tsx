@@ -101,17 +101,17 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
       clearInterval(spinIntervalRef.current);
     }
     
-    // Random number of spins (between 3-5 full rotations)
-    const spins = Math.floor(Math.random() * 3) + 3;
+    // Reduced number of spins (between 2-3 full rotations)
+    const spins = Math.floor(Math.random() * 2) + 1.5;
     
     // Store the total steps and target card for reference
-    totalStepsRef.current = spins * catImages.length + 
-      ((finalCatId - currentIndex + catImages.length) % catImages.length);
+    totalStepsRef.current = Math.floor(spins * catImages.length + 
+      ((finalCatId - currentIndex + catImages.length) % catImages.length));
     spinStepsRef.current = 0;
     targetCardRef.current = finalCatId % catImages.length;
     
-    // Start with a fast speed that gradually slows down
-    setSpinSpeed(80);
+    // Faster starting speed
+    setSpinSpeed(50);
     
     // Start the spinning animation
     spinStep();
@@ -134,22 +134,22 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
     setCurrentIndex(prev => (prev + 1) % catImages.length);
     spinStepsRef.current++;
     
-    // Calculate the next delay - slow down near the end
+    // Calculate the next delay - faster progression with quicker slowdown
     let nextDelay: number;
     const progress = spinStepsRef.current / totalStepsRef.current;
     
-    if (progress < 0.7) {
-      // Fast spinning for most of the animation
+    if (progress < 0.6) {
+      // Fast spinning for most of the animation - faster than before
+      nextDelay = 50;
+    } else if (progress < 0.8) {
+      // Start slowing down - faster than before
       nextDelay = 80;
-    } else if (progress < 0.85) {
-      // Start slowing down
+    } else if (progress < 0.9) {
+      // Even slower - faster than before
       nextDelay = 120;
-    } else if (progress < 0.95) {
-      // Even slower
-      nextDelay = 180;
     } else {
-      // Final slowdown
-      nextDelay = 250;
+      // Final slowdown - faster than before
+      nextDelay = 180;
     }
     
     // Schedule the next step with the calculated delay

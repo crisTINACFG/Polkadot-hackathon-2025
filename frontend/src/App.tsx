@@ -74,99 +74,111 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      {/* Sparkles effect - always visible now */}
+    <>
+      {/* Sparkles effect - outside fixed width wrapper to cover entire screen */}
       <Sparkles />
       
-      <div className="app-header">
-        {/* Wallet Status - Now part of header layout */}
-        <div className="wallet-status-left">
-          {currentAddress ? (
-            <div className="wallet-connected">
-              <div className="wallet-icon">🐱</div>
-              <div className="wallet-text">
-                <span className="wallet-label">Purrfectly Connected Wallet:</span>
-                <span className="wallet-address">{currentAddress.substring(0, 6)}...{currentAddress.substring(currentAddress.length - 4)}</span>
+      <div className="fixed-width-wrapper">
+        <div className="app-container">
+          {/* Fixed dashboard section */}
+          <div className="app-top-section">
+            <div className="app-header">
+              {/* Wallet Status */}
+              <div className="wallet-status-left">
+                {currentAddress ? (
+                  <div className="wallet-connected">
+                    <div className="wallet-icon">🐱</div>
+                    <div className="wallet-text">
+                      <span className="wallet-label">Purrfectly Connected Wallet:</span>
+                      <span className="wallet-address">{currentAddress.substring(0, 6)}...{currentAddress.substring(currentAddress.length - 4)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleConnectWallet}
+                    className="connect-wallet-button"
+                  >
+                    <span className="wallet-connect-icon">🐾</span>
+                    Connect Wallet
+                  </button>
+                )}
               </div>
             </div>
-          ) : (
-            <button
-              onClick={handleConnectWallet}
-              className="connect-wallet-button"
-            >
-              <span className="wallet-connect-icon">🐾</span>
-              Connect Wallet
-            </button>
-          )}
+
+            {/* Main App Navigation */}
+            <nav className="app-nav">
+              <button 
+                onClick={() => setCurrentView('spin')}
+                className={currentView === 'spin' ? 'active' : ''}
+                data-view="spin"
+              >
+                Get Cats
+              </button>
+              <button 
+                onClick={() => setCurrentView('marketplace')}
+                className={currentView === 'marketplace' ? 'active' : ''}
+                data-view="marketplace"
+              >
+                Marketplace
+              </button>
+              <button 
+                onClick={() => setCurrentView('gallery')}
+                className={currentView === 'gallery' ? 'active' : ''}
+                data-view="gallery"
+              >
+                My Gallery
+              </button>
+            </nav>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="content-wrapper">
+            <main className="main-content">
+              {currentView === 'spin' && (
+                <CatCarousel 
+                  onAddRandomCard={handleGetRandomCard}
+                  isProcessing={isProcessing}
+                  lastReceivedCard={lastReceivedCard}
+                  isConnected={Boolean(currentAddress)}
+                />
+              )}
+              
+              {currentView === 'marketplace' && (
+                <Marketplace 
+                  listings={listings}
+                  createListing={createListing}
+                  acceptListing={acceptListing}
+                  cancelListing={cancelListing}
+                  setOfferCardId={setOfferCardId}
+                  setRequestCardId={setRequestCardId}
+                  status={status}
+                  currentAddress={currentAddress}
+                  tradingErrorMessage={tradingErrorMessage}
+                  isConnected={Boolean(currentAddress)}
+                  isCardInActiveListing={isCardInActiveListing}
+                />
+              )}
+              
+              {currentView === 'gallery' && (
+                <Gallery 
+                  inventory={inventory}
+                  onAddRandomCard={handleGetRandomCard}
+                  isConnected={Boolean(currentAddress)}
+                  setCurrentView={setCurrentView}
+                />
+              )}
+            </main>
+
+            {/* Error Messages */}
+            {inventoryStatus === 'Revert' && (
+              <div style={{ color: '#F87171', margin: '20px 0', textAlign: 'center', fontWeight: 'bold' }}>
+                Error: {errorMessage || 'Something went wrong. Please try again.'}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Main App Navigation */}
-      <nav className="app-nav">
-        <button 
-          onClick={() => setCurrentView('spin')}
-          className={currentView === 'spin' ? 'active' : ''}
-        >
-          Get Cats
-        </button>
-        <button 
-          onClick={() => setCurrentView('marketplace')}
-          className={currentView === 'marketplace' ? 'active' : ''}
-        >
-          Marketplace
-        </button>
-        <button 
-          onClick={() => setCurrentView('gallery')}
-          className={currentView === 'gallery' ? 'active' : ''}
-        >
-          My Gallery
-        </button>
-      </nav>
-
-      {/* Main Content Area */}
-      <main className="main-content">
-        {currentView === 'spin' && (
-          <CatCarousel 
-            onAddRandomCard={handleGetRandomCard}
-            isProcessing={isProcessing}
-            lastReceivedCard={lastReceivedCard}
-            isConnected={Boolean(currentAddress)}
-          />
-        )}
-        
-        {currentView === 'marketplace' && (
-          <Marketplace 
-            listings={listings}
-            createListing={createListing}
-            acceptListing={acceptListing}
-            cancelListing={cancelListing}
-            setOfferCardId={setOfferCardId}
-            setRequestCardId={setRequestCardId}
-            status={status}
-            currentAddress={currentAddress}
-            tradingErrorMessage={tradingErrorMessage}
-            isConnected={Boolean(currentAddress)}
-            isCardInActiveListing={isCardInActiveListing}
-          />
-        )}
-        
-        {currentView === 'gallery' && (
-          <Gallery 
-            inventory={inventory}
-            onAddRandomCard={handleGetRandomCard}
-            isConnected={Boolean(currentAddress)}
-            setCurrentView={setCurrentView}
-          />
-        )}
-      </main>
-
-      {/* Error Messages */}
-      {inventoryStatus === 'Revert' && (
-        <div style={{ color: '#F87171', margin: '20px 0', textAlign: 'center', fontWeight: 'bold' }}>
-          Error: {errorMessage || 'Something went wrong. Please try again.'}
-        </div>
-      )}
-    </div>
+    </>
   );
 }
 
