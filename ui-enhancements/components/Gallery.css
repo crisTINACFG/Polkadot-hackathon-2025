@@ -1,0 +1,91 @@
+.gallery-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .gallery-container h1 {
+    text-align: center;
+    color: #ff6b8b;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(255, 105, 140, 0.2);
+  }
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
+    width: 100%;
+    max-width: 1000px; /* Adjust as needed */
+    justify-items: center; /* This centers the grid items */
+  }
+  
+  .gallery-item {
+    aspect-ratio: 1/1;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 105, 140, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(255, 105, 140, 0.4);
+  }
+  
+  /* Rarity Border Colors */
+  .gallery-item.legendary {
+    border: 4px solid #ff3d6e;
+  }
+  
+  .gallery-item.rare {
+    border: 4px solid #ff6b8b;
+  }
+  
+  .gallery-item.common {
+    border: 4px solid #ff85a2;
+  }
+  
+  .cat-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    background-color: #fff;
+  }
+  
+  .rarity-label {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Different background colors based on rarity */
+  .gallery-item.legendary .cat-image {
+    background: linear-gradient(135deg, #ffc0cb, #ff6b8b);
+  }
+  
+  .gallery-item.rare .cat-image {
+    background: linear-gradient(135deg, #ffc0cb, #ff85a2);
+  }
+  
+  .gallery-item.common .cat-image {
+    background: linear-gradient(135deg, #ffc0cb, #ffc0d8);
+  }

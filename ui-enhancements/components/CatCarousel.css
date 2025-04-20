@@ -1,0 +1,208 @@
+.cat-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #fff5f7, #ffe5e9);
+  border-radius: 2rem;
+  box-shadow: 0 8px 16px rgba(255, 105, 140, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-container {
+  width: 100%;
+  max-width: 800px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 1.5rem;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(255, 105, 140, 0.15);
+}
+
+.carousel-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.5s ease;
+}
+
+.cat-card {
+  flex: 0 0 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 8px rgba(255, 105, 140, 0.1);
+  border: 2px solid #ffe5e9;
+  transition: transform 0.3s ease;
+}
+
+.cat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(255, 105, 140, 0.2);
+}
+
+.cat-card img {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+  filter: drop-shadow(0 4px 8px rgba(255, 105, 140, 0.2));
+}
+
+.cat-info {
+  text-align: center;
+}
+
+.cat-info h3 {
+  margin: 0;
+  color: #ff6b8b;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(255, 105, 140, 0.1);
+}
+
+.rarity {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.rarity.common {
+  background-color: #ffe5e9;
+  color: #ff6b8b;
+}
+
+.rarity.rare {
+  background-color: #ffb6c1;
+  color: #ff4d6d;
+}
+
+.rarity.epic {
+  background-color: #ff85a2;
+  color: white;
+}
+
+.rarity.legendary {
+  background-color: #ff6b8b;
+  color: white;
+}
+
+.rarity.mythic {
+  background: linear-gradient(45deg, #ff6b8b, #ff85a2, #ffb6c1, #ffe5e9, #ff6b8b);
+  background-size: 400% 400%;
+  animation: rainbow 3s ease infinite;
+  color: white;
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+.spin-button {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: linear-gradient(45deg, #ff6b8b, #ff85a2);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(255, 105, 140, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.spin-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(255, 105, 140, 0.4);
+}
+
+.spin-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spin-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: -100%; }
+}
+
+.selection-banner {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem 2rem;
+  border-radius: 2rem;
+  box-shadow: 0 4px 12px rgba(255, 105, 140, 0.2);
+  animation: fadeIn 0.5s ease;
+  border: 2px solid #ffe5e9;
+  color: #ff6b8b;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: confetti-fall 3s ease-in-out forwards;
+  opacity: 0;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+} 
