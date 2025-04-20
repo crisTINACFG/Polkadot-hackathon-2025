@@ -88,7 +88,7 @@ export default function Gallery({ inventory, onAddRandomCard, isConnected, setCu
               <div className="cat-name">{cat.name}</div>
               <div className="rarity-label">{rarity.toUpperCase()}</div>
               {quantity > 1 && (
-                <div className="quantity">{quantity}</div>
+                <div className="quantity">+{quantity - 1}</div>
               )}
             </div>
           );

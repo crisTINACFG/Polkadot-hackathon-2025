@@ -230,7 +230,10 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 2}s`,
-                backgroundColor: ['#ff6b8b', '#ff85a2', '#ffb6c1', '#ffe5e9'][Math.floor(Math.random() * 4)]
+                backgroundColor: ['#ff6b8b', '#ff85a2', '#ffb6c1', '#ffe5e9'][Math.floor(Math.random() * 4)],
+                animationDuration: `${2 + Math.random() * 2}s`, // Randomize duration for smoother effect
+                width: `${5 + Math.random() * 7}px`, // Randomize size
+                height: `${5 + Math.random() * 7}px` // Randomize size
               }}
             />
           ))}

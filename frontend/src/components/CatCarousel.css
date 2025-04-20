@@ -211,9 +211,18 @@
 
 @keyframes confetti-fall {
   0% {
-    transform: translateY(-100px) rotate(0deg);
+    transform: translateY(-50px) rotate(0deg);
+    opacity: 0;
+  }
+  
+  10% {
     opacity: 1;
   }
+  
+  80% {
+    opacity: 1;
+  }
+  
   100% {
     transform: translateY(100vh) rotate(360deg);
     opacity: 0;
@@ -269,7 +278,7 @@
   border: 2px solid rgba(255, 255, 255, 0.6);
   transition: all 0.3s ease;
   transform-origin: center bottom;
-  animation: cat-bounce 3s infinite;
+  animation: cat-bounce 3s ease-in-out infinite; /* Use ease-in-out for smoother transitions */
   animation-delay: calc(var(--cat-delay) * 1s);
   position: relative;
   overflow: visible;
@@ -341,7 +350,7 @@
 .preview-cat-rarity.legendary {
   background: linear-gradient(45deg, #ff9aa2, #ffb7b2, #ffdac1, #e2f0cb, #b5ead7, #c7ceea, #ff9aa2);
   background-size: 400% 400%;
-  animation: rainbow 3s ease infinite;
+  animation: rainbow 3s ease-in-out infinite; /* Use ease-in-out for smoother transitions */
   color: #464646;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
   border: 1px solid #ffd700;
@@ -364,7 +373,8 @@
 
 @keyframes rainbow-border {
   0% { background-position: 0% 50%; }
-  100% { background-position: 300% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @keyframes gold-shimmer {
@@ -380,9 +390,9 @@
 }
 
 @keyframes rainbow {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Update main carousel rarity tags to match preview styles */
@@ -427,7 +437,7 @@
   color: #333;
   font-weight: bold;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-  animation: gold-shine 2s infinite alternate;
+  animation: gold-shine-smooth 2s ease-in-out infinite; /* Use the new smoother animation */
   border: 1px solid rgba(212, 175, 55, 0.5);
 }
 
@@ -438,19 +448,23 @@
   color: #333;
   font-weight: bold;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-  animation: gold-shine 2s infinite alternate;
+  animation: gold-shine-smooth 2s ease-in-out infinite; /* Use the new smoother animation */
   border: 1px solid rgba(212, 175, 55, 0.5);
 }
 
 /* Add the gold-shine animation */
 @keyframes gold-shine {
-  from {
+  0% {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
     background-position: 0% 50%;
   }
-  to {
+  50% {
     box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.3);
     background-position: 100% 50%;
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    background-position: 0% 50%;
   }
 }
 
@@ -461,6 +475,41 @@
   color: #333;
   font-weight: bold;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-  animation: gold-shine 2s infinite alternate;
+  animation: gold-shine-smooth 2s ease-in-out infinite; /* Use the new smoother animation */
   border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+/* Add cat bounce animation for the preview cats */
+@keyframes cat-bounce {
+  0% { 
+    transform: translateY(0); 
+  }
+  25% { 
+    transform: translateY(-3px); 
+  }
+  50% { 
+    transform: translateY(-5px); 
+  }
+  75% { 
+    transform: translateY(-3px); 
+  }
+  100% { 
+    transform: translateY(0); 
+  }
+}
+
+/* Gold shine animation with smoother transitions */
+@keyframes gold-shine-smooth {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    background-position: 0% 50%;
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.3);
+    background-position: 100% 50%;
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    background-position: 0% 50%;
+  }
 } 
