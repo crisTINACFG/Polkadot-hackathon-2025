@@ -81,7 +81,11 @@ pnpm frontend:dev
 ## 🎮 How to Use
 
 **Connect Your Wallet**:
-- Click the "Connect Wallet" button in the top-right corner
+- Have a metamask wallet
+- Add the Westend Asset Hub network https://papermoonio.github.io/polkadot-mkdocs/develop/smart-contracts/connect-to-asset-hub/#connect-your-wallet
+- rpc url = https://westend-asset-hub-eth-rpc.polkadot.io
+- get WND coins from https://faucet.polkadot.io using westend and assethub
+- Click the "Connect Wallet" button in the top-right corner of the website (after running it ofcourse)
 - Approve the connection in your MetaMask wallet
 
 **Get Your First Cat**:
