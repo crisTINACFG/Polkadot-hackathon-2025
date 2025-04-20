@@ -65,6 +65,31 @@ The system leverages blockchain technology to ensure immutable ownership records
 - MetaMask wallet browser extension
 - Access to Westend Asset Hub testnet
 
+## 🚀 Installation and Setup
+
+To run the project locally:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+
+# Navigate to the project directory
+cd miauD
+
+# Install dependencies at the root level
+npm install
+
+# Navigate to the frontend directory
+cd frontend
+
+# Install frontend dependencies
+npm install
+
+# Go back to the root directory and start the frontend
+cd ..
+pnpm frontend:dev
+```
+
 ## 🎮 How to Use
 
 **Connect Your Wallet**:
