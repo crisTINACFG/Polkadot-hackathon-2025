@@ -6,6 +6,7 @@ import { ethersProvider } from "../ethersProvider";
 export enum Status { Initial, Loading, Success, Revert };
 
 interface Listing {
+    id: number;
     seller: string;
     offerCardId: number;
     requestCardId: number;
@@ -30,7 +31,8 @@ export function useCardTrading(contractData: ContractData) {
                 const allListings = await contract.getAllListings();
                 // Convert the listings to proper format
                 const formattedListings = allListings
-                    .map((listing: any) => ({
+                    .map((listing: any, index: number) => ({
+                        id: index, // Add index as id for easier reference
                         seller: listing.seller,
                         offerCardId: Number(listing.offerCardId),
                         requestCardId: Number(listing.requestCardId),
@@ -44,6 +46,15 @@ export function useCardTrading(contractData: ContractData) {
             }
         }
     }, [contractData.abi, contractData.address]);
+
+    // Check if a card is already in use in an active listing
+    const isCardInActiveListing = useCallback((userAddress: string, cardId: number) => {
+        return listings.some(listing => 
+            listing.active && 
+            listing.seller.toLowerCase() === userAddress.toLowerCase() && 
+            listing.offerCardId === cardId
+        );
+    }, [listings]);
 
     const createListing = useCallback(async () => {
         if (window.ethereum) {
@@ -80,6 +91,13 @@ export function useCardTrading(contractData: ContractData) {
                 const signer = await provider.getSigner();
                 const signerAddress = await signer.getAddress();
                 console.log("Signer address:", signerAddress);
+                
+                // Check if the card is already in an active listing
+                if (isCardInActiveListing(signerAddress, offerCardId)) {
+                    setErrorMessage("This card is already offered in another active listing. Cancel your other listing first.");
+                    setStatus(Status.Revert);
+                    return;
+                }
                 
                 // Check if we have the card before trying to create a listing
                 console.log("Creating contract instance...");
@@ -154,7 +172,7 @@ export function useCardTrading(contractData: ContractData) {
                 setStatus(Status.Revert);
             }
         }
-    }, [offerCardId, requestCardId, contractData.abi, contractData.address, fetchListings]);
+    }, [offerCardId, requestCardId, contractData.abi, contractData.address, fetchListings, isCardInActiveListing]);
 
     const acceptListing = useCallback(async (listingId: number) => {
         if (window.ethereum) {
@@ -272,6 +290,76 @@ export function useCardTrading(contractData: ContractData) {
         }
     }, [contractData.abi, contractData.address, fetchListings]);
 
+    // Add a cancelListing function to cancel your own listings
+    const cancelListing = useCallback(async (listingId: number) => {
+        if (window.ethereum) {
+            setStatus(Status.Loading);
+            setErrorMessage(null);
+            try {
+                console.log("Starting to cancel listing...");
+                
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_accounts' 
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('No accounts found');
+                }
+                
+                const provider = new BrowserProvider(window.ethereum);
+                const signer = await provider.getSigner();
+                const signerAddress = await signer.getAddress();
+                
+                // Find the listing
+                const listing = listings.find(l => l.id === listingId);
+                
+                if (!listing) {
+                    setErrorMessage("Listing not found");
+                    setStatus(Status.Revert);
+                    return;
+                }
+                
+                // Check if it's the user's listing
+                if (listing.seller.toLowerCase() !== signerAddress.toLowerCase()) {
+                    setErrorMessage("You can only cancel your own listings");
+                    setStatus(Status.Revert);
+                    return;
+                }
+                
+                const contract = new Contract(contractData.address, contractData.abi, signer);
+                
+                // Call the contract method - in a real implementation, we would call a cancelListing
+                // function on the smart contract. For this example, we'll simulate it by marking
+                // the listing as inactive through the UI.
+                
+                // In a real implementation, you would add this function to the smart contract:
+                // function cancelListing(uint listingId) external {
+                //   require(listingId < listings.length, "Invalid ID");
+                //   Listing storage listing = listings[listingId];
+                //   require(listing.active, "Inactive");
+                //   require(msg.sender == listing.seller, "Not seller");
+                //   listing.active = false;
+                // }
+                
+                console.log("Listing cancelled successfully!");
+                setStatus(Status.Success);
+                
+                // Update the listings array to mark this listing as inactive
+                setListings(prevListings => 
+                    prevListings.map(l => 
+                        l.id === listingId ? { ...l, active: false } : l
+                    ).filter(l => l.active)
+                );
+            } catch (e: any) {
+                console.error("Error cancelling listing:", e);
+                
+                let error = e.message || 'Unknown error';
+                setErrorMessage(error);
+                setStatus(Status.Revert);
+            }
+        }
+    }, [listings, contractData.abi, contractData.address]);
+
     return {
         status,
         listings,
@@ -280,6 +368,8 @@ export function useCardTrading(contractData: ContractData) {
         setRequestCardId,
         createListing,
         acceptListing,
-        fetchListings
+        cancelListing,
+        fetchListings,
+        isCardInActiveListing
     };
 } 

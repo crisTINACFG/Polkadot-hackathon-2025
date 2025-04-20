@@ -1,0 +1,228 @@
+.gallery-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 5;
+}
+
+.gallery-container h1 {
+  text-align: center;
+  color: #ff6b8b;
+  margin-bottom: 40px;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(255, 105, 140, 0.2);
+}
+
+.sakura-emoji {
+  color: inherit;
+  opacity: 0.9; /* Slightly reduce opacity to better match the text */
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 1000px;
+  justify-items: center;
+}
+
+.gallery-item {
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(255, 105, 140, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: white;
+  z-index: 5;
+  width: 180px;
+  height: 180px;
+}
+
+.gallery-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(255, 105, 140, 0.4);
+}
+
+/* Rarity Border Colors */
+.gallery-item.legendary {
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(90deg, #ff3d6e, #ffcc00, #33cc33, #3399ff, #cc33ff, #ff3d6e) border-box;
+  background-size: 300% 100%;
+  animation: rainbow-border 4s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 61, 110, 0.6);
+}
+
+@keyframes rainbow-border {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.gallery-item.rare {
+  border: 4px solid #d4af37; /* Rich gold color */
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+  animation: gold-glow 2s infinite alternate;
+}
+
+@keyframes gold-glow {
+  from {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.7);
+    border-color: #d4af37;
+  }
+  to {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.9), 0 0 30px rgba(255, 215, 0, 0.4);
+    border-color: #ffd700;
+  }
+}
+
+.gallery-item.common {
+  border: 4px solid #ff85a2;
+}
+
+/* Locked card styles */
+.gallery-item.locked {
+  opacity: 0.7;
+  filter: grayscale(30%);
+}
+
+.cat-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 15px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #fff;
+}
+
+.question-mark-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background: white;
+}
+
+.question-mark {
+  font-size: 5rem;
+  font-weight: bold;
+  color: var(--pink-primary);
+  text-shadow: 0 2px 8px rgba(255, 105, 140, 0.5);
+}
+
+.cat-name {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.95rem;
+  color: #ff6b8b;
+  padding: 0 5px;
+  z-index: 5;
+}
+
+.rarity-label {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Different background colors based on rarity - using white backgrounds */
+.gallery-item.legendary .cat-image {
+  background: white;
+}
+
+.gallery-item.rare .cat-image {
+  background: white;
+}
+
+.gallery-item.common .cat-image {
+  background: white;
+}
+
+.gallery-item .quantity {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #ff6b8b;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.locked-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+}
+
+.locked-text {
+  font-size: 3rem;
+  color: rgba(255, 107, 139, 0.7);
+  font-weight: bold;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.empty-gallery-message {
+  text-align: center;
+  padding: 50px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(255, 105, 140, 0.2);
+  margin-top: 20px;
+}
+
+.empty-gallery-message p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.empty-gallery-message button {
+  background-color: #ff6b8b;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+} 

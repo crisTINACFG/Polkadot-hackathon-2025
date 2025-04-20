@@ -4,7 +4,7 @@ import { ContractData } from "contracts";
 import { ethersProvider } from "../ethersProvider";
 
 export function useInventoryManager(contractData: ContractData) {
-    const [inventory, setInventory] = useState<number[]>(Array(17).fill(0));
+    const [inventory, setInventory] = useState<number[]>(Array(15).fill(0));
     const [hasCard, setHasCard] = useState<boolean>(false);
     const [status, setStatus] = useState<'Initial' | 'Loading' | 'Success' | 'Revert'>('Initial');
     const [lastReceivedCard, setLastReceivedCard] = useState<number | null>(null);
@@ -122,8 +122,8 @@ export function useInventoryManager(contractData: ContractData) {
                 // Create contract instance
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
-                // Generate random card ID (0-16)
-                const randomCardId = Math.floor(Math.random() * 17);
+                // Generate random card ID (0-14 to match our UI cat images)
+                const randomCardId = Math.floor(Math.random() * 15);
                 console.log('Adding card:', randomCardId, 'for address:', selectedAddress);
                 
                 // Try to estimate gas first to check if the transaction would succeed
@@ -191,7 +191,7 @@ export function useInventoryManager(contractData: ContractData) {
                 await getInventory(newAddress);
             } else {
                 setCurrentAddress(null);
-                setInventory(Array(17).fill(0));
+                setInventory(Array(15).fill(0));
             }
         };
 

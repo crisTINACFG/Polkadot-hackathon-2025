@@ -19,32 +19,36 @@ import rainbow from "../assets/rainbow.png";
 import wizard from "../assets/wizard.png";
 
 interface CatCarouselProps {
-  addCard: (catId: string) => void;
+  onAddRandomCard: () => Promise<void>;
+  isProcessing: boolean;
+  lastReceivedCard: number | null;
+  isConnected: boolean;
 }
 
 const catImages = [
-    { id: 'cat_astronaut', name: 'Astronaut', image: astronaut, rarity: 'rare' },
-    { id: 'cat_alien', name: 'Alien', image: alien, rarity: 'legendary' },
-    { id: 'cat_bear', name: 'Bear', image: bear, rarity: 'common' },
-    { id: 'cat_cyber', name: 'Cyber', image: cyber, rarity: 'rare' },
-    { id: 'cat_doctor', name: 'Doctor', image: doctor, rarity: 'common' },
-    { id: 'cat_fairy', name: 'Fairy', image: fairy, rarity: 'rare' },
-    { id: 'cat_frog', name: 'Frog', image: frog, rarity: 'common' },
-    { id: 'cat_holographic', name: 'Holographic', image: holographic, rarity: 'legendary' },
-    { id: 'cat_jellyfish', name: 'Jellyfish', image: jellyfish, rarity: 'rare' },
-    { id: 'cat_mermaid', name: 'Mermaid', image: mermaid, rarity: 'legendary' },
-    { id: 'cat_moustache', name: 'Moustache', image: moustache, rarity: 'common' },
-    { id: 'cat_pirate', name: 'Pirate', image: pirate, rarity: 'rare' },
-    { id: 'cat_princess', name: 'Princess', image: princess, rarity: 'legendary' },
-    { id: 'cat_rainbow', name: 'Rainbow', image: rainbow, rarity: 'legendary' },
-    { id: 'cat_wizard', name: 'Wizard', image: wizard, rarity: 'rare' }
+    { id: 0, name: 'Alien', image: alien, rarity: 'legendary' },
+    { id: 1, name: 'Astronaut', image: astronaut, rarity: 'rare' },
+    { id: 2, name: 'Bear', image: bear, rarity: 'common' },
+    { id: 3, name: 'Cyber', image: cyber, rarity: 'rare' },
+    { id: 4, name: 'Doctor', image: doctor, rarity: 'common' },
+    { id: 5, name: 'Fairy', image: fairy, rarity: 'rare' },
+    { id: 6, name: 'Frog', image: frog, rarity: 'common' },
+    { id: 7, name: 'Holographic', image: holographic, rarity: 'legendary' },
+    { id: 8, name: 'Jellyfish', image: jellyfish, rarity: 'rare' },
+    { id: 9, name: 'Mermaid', image: mermaid, rarity: 'legendary' },
+    { id: 10, name: 'Moustache', image: moustache, rarity: 'common' },
+    { id: 11, name: 'Pirate', image: pirate, rarity: 'rare' },
+    { id: 12, name: 'Princess', image: princess, rarity: 'legendary' },
+    { id: 13, name: 'Rainbow', image: rainbow, rarity: 'legendary' },
+    { id: 14, name: 'Wizard', image: wizard, rarity: 'rare' }
 ];
 
-const CatCarousel: React.FC<CatCarouselProps> = ({ addCard }) => {
+const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing, lastReceivedCard, isConnected }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [selectedCat, setSelectedCat] = useState<string | null>(null);
+  const [selectedCat, setSelectedCat] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [shouldSpin, setShouldSpin] = useState(false);
 
   useEffect(() => {
     if (showConfetti) {
@@ -53,12 +57,17 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ addCard }) => {
     }
   }, [showConfetti]);
 
-  const handleSpin = () => {
-    if (isSpinning) return;
-    
+  // Watch for transaction completion and start spinning when successful
+  useEffect(() => {
+    // If transaction completed successfully and we should start spinning
+    if (!isProcessing && lastReceivedCard !== null && shouldSpin) {
+      startSpinAnimation(lastReceivedCard);
+      setShouldSpin(false);
+    }
+  }, [isProcessing, lastReceivedCard, shouldSpin]);
+
+  const startSpinAnimation = (finalCatId: number) => {
     setIsSpinning(true);
-    setSelectedCat(null);
-    setShowConfetti(false);
     
     // Random number of spins (between 3-5 full rotations)
     const spins = Math.floor(Math.random() * 3) + 3;
@@ -71,14 +80,30 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ addCard }) => {
       
       if (currentStep >= totalSteps) {
         clearInterval(spinInterval);
-        const finalIndex = Math.floor(Math.random() * catImages.length);
-        setCurrentIndex(finalIndex);
-        setSelectedCat(catImages[finalIndex].id);
+        // Set the carousel to show the exact card we received
+        setCurrentIndex(finalCatId % catImages.length);
+        setSelectedCat(finalCatId);
         setIsSpinning(false);
-        addCard(catImages[finalIndex].id);
         setShowConfetti(true);
       }
-    }, 80); // Changed from 50ms to 80ms for a slightly slower spin
+    }, 80);
+  };
+
+  const handleSpin = async () => {
+    if (isSpinning || isProcessing || !isConnected) return;
+    
+    setSelectedCat(null);
+    setShowConfetti(false);
+    
+    try {
+      // Tell the component to start spinning after transaction completes
+      setShouldSpin(true);
+      // Call the blockchain transaction
+      await onAddRandomCard();
+    } catch (error) {
+      console.error("Error during spinning:", error);
+      setShouldSpin(false);
+    }
   };
 
   return (
@@ -105,10 +130,10 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ addCard }) => {
           className="carousel-track"
           style={{ 
             transform: `translateX(-${currentIndex * 100}%)`,
-            transition: isSpinning ? 'none' : 'transform 0.3s ease'
+            transition: isSpinning ? 'transform 0.2s ease' : 'transform 0.5s ease'
           }}
         >
-          {catImages.map((cat, index) => (
+          {catImages.map((cat) => (
             <div key={cat.id} className="cat-card">
               <img src={cat.image} alt={cat.name} />
               <div className="cat-info">
@@ -123,14 +148,14 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ addCard }) => {
       <button 
         className="spin-button"
         onClick={handleSpin}
-        disabled={isSpinning}
+        disabled={isSpinning || isProcessing || !isConnected}
       >
-        {isSpinning ? 'Spinning...' : 'Spin for a Cat!'}
+        {!isConnected ? 'Connect Wallet First' : (isProcessing ? 'Processing Transaction...' : (isSpinning ? 'Spinning...' : 'Spin for a Cat!'))}
       </button>
 
-      {selectedCat && (
+      {selectedCat !== null && (
         <div className="selection-banner">
-          You got a {catImages.find(cat => cat.id === selectedCat)?.name}!
+          You got a {catImages.find(cat => cat.id === selectedCat % catImages.length)?.name || `Cat ${selectedCat}`}!
         </div>
       )}
     </div>

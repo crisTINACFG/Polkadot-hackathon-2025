@@ -3,6 +3,10 @@ import { contracts } from "contracts";
 import { useCardTrading, Status } from "./hooks/useCardTrading";
 import { useInventoryManager } from "./hooks/useInventoryManager";
 import "./App.css";
+import CatCarousel from "./components/CatCarousel";
+import Marketplace from "./components/Marketplace";
+import Gallery from "./components/Gallery";
+import { Sparkles } from "./components/Sparkles";
 
 // Update to the correctly deployed addresses in lowercase to match export
 const CARD_TRADING_ADDRESS = "f64af8bd10a28c5ba50121758d1303f16409afa7";
@@ -17,11 +21,34 @@ function App() {
 
   const cardTradingData = contracts[CARD_TRADING_ADDRESS];
   const inventoryManagerData = contracts[INVENTORY_MANAGER_ADDRESS];
-  const [userAddress, setUserAddress] = useState<string>("");
-  const [flashingCard, setFlashingCard] = useState<number | null>(null);
+  const [currentView, setCurrentView] = useState<'spin' | 'marketplace' | 'gallery'>('spin');
 
-  const { status, listings, errorMessage: tradingErrorMessage, setOfferCardId, setRequestCardId, createListing, acceptListing, fetchListings } = useCardTrading(cardTradingData);
-  const { inventory, hasCard, status: inventoryStatus, lastReceivedCard, isProcessing, currentAddress, errorMessage, connectWallet, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
+  const { 
+    status, 
+    listings, 
+    errorMessage: tradingErrorMessage, 
+    setOfferCardId, 
+    setRequestCardId, 
+    createListing, 
+    acceptListing, 
+    cancelListing,
+    fetchListings,
+    isCardInActiveListing
+  } = useCardTrading(cardTradingData);
+
+  const { 
+    inventory, 
+    hasCard, 
+    status: inventoryStatus, 
+    lastReceivedCard, 
+    isProcessing, 
+    currentAddress, 
+    errorMessage, 
+    connectWallet, 
+    getInventory, 
+    checkHasCard, 
+    addRandomCard 
+  } = useInventoryManager(inventoryManagerData);
 
   // Refresh listings when current address changes
   useEffect(() => {
@@ -47,134 +74,95 @@ function App() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Card Trading DApp</h1>
+    <div className="app-container">
+      {/* Sparkles effect - always visible now */}
+      <Sparkles />
       
-      {/* Wallet Status */}
-      <div className="mb-4">
-        {currentAddress ? (
-          <p className="text-sm text-gray-600">Connected: {currentAddress}</p>
-        ) : (
-          <button
-            onClick={handleConnectWallet}
-            className="text-sm text-blue-600 hover:text-blue-800"
-          >
-            Connect Wallet
-          </button>
-        )}
-      </div>
-
-      {/* Inventory Section */}
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="font-semibold">Your Inventory</h2>
-          <button
-            className={`px-4 py-2 rounded ${
-              isProcessing || !currentAddress
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-purple-500 hover:bg-purple-600'
-            } text-white`}
-            onClick={handleGetRandomCard}
-            disabled={isProcessing || !currentAddress}
-          >
-            {!currentAddress ? 'Connect Wallet' : (isProcessing ? 'Processing...' : 'Get Random Card')}
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {inventory.map((quantity, cardId) => (
-            <div 
-              key={cardId} 
-              className={`p-2 border rounded ${lastReceivedCard === cardId && inventoryStatus === 'Success' ? 'flash-card' : ''}`}
-            >
-              <p>Card {cardId}: <strong>{quantity}</strong></p>
-            </div>
-          ))}
-        </div>
-        {inventoryStatus === 'Success' && lastReceivedCard !== null && (
-          <div className="text-green-500 mt-2">Got Card {lastReceivedCard}!</div>
-        )}
-        {inventoryStatus === 'Revert' && (
-          <div className="text-red-500 mt-2">
-            Failed to get a card: {errorMessage || 'Please try again.'}
-          </div>
-        )}
-      </div>
-
-      {/* Create Listing Section */}
-      <div className="mb-6">
-        <h2 className="font-semibold mb-2">Create New Listing</h2>
-        <div className="flex gap-4 mb-2">
-          <div>
-            <label className="block mb-1">Offer Card ID:</label>
-            <input
-              type="number"
-              min="0"
-              max="16"
-              className="border rounded p-1"
-              onChange={(e) => setOfferCardId(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <label className="block mb-1">Request Card ID:</label>
-            <input
-              type="number"
-              min="0"
-              max="16"
-              className="border rounded p-1"
-              onChange={(e) => setRequestCardId(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={createListing}
-          disabled={status === Status.Loading || !currentAddress}
-        >
-          {status === Status.Loading ? "Creating..." : "Create Listing"}
-        </button>
-        
-        {status === Status.Revert && tradingErrorMessage && (
-          <div className="text-red-500 mt-2">
-            Failed to create listing: {tradingErrorMessage}
-          </div>
-        )}
-      </div>
-
-      {/* Active Listings Section */}
-      <div className="mb-6">
-        <h2 className="font-semibold mb-2">Active Listings</h2>
-        <div className="grid gap-4">
-          {listings.map((listing, index) => {
-            const isUserListing = currentAddress && listing.seller.toLowerCase() === currentAddress.toLowerCase();
-            return (
-              <div key={index} className="p-4 border rounded">
-                <p>Seller: {listing.seller}</p>
-                <p>Offering: Card {listing.offerCardId}</p>
-                <p>Requesting: Card {listing.requestCardId}</p>
-                <button
-                  className={`mt-2 px-4 py-2 rounded ${
-                    isUserListing
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-green-500 text-white hover:bg-green-600"
-                  }`}
-                  onClick={() => !isUserListing && acceptListing(index)}
-                  disabled={status === Status.Loading || isUserListing || !currentAddress}
-                >
-                  {isUserListing ? "Your Listing" : (status === Status.Loading ? "Processing..." : "Accept Trade")}
-                </button>
+      <div className="app-header">
+        {/* Wallet Status - Now part of header layout */}
+        <div className="wallet-status-left">
+          {currentAddress ? (
+            <div className="wallet-connected">
+              <div className="wallet-icon">🐱</div>
+              <div className="wallet-text">
+                <span className="wallet-label">Purrfectly Connected Wallet:</span>
+                <span className="wallet-address">{currentAddress.substring(0, 6)}...{currentAddress.substring(currentAddress.length - 4)}</span>
               </div>
-            );
-          })}
+            </div>
+          ) : (
+            <button
+              onClick={handleConnectWallet}
+              className="connect-wallet-button"
+            >
+              <span className="wallet-connect-icon">🐾</span>
+              Connect Wallet
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Status Messages */}
-      {status === Status.Success && (
-        <div className="text-green-500 mb-4">Transaction successful!</div>
-      )}
-      {status === Status.Revert && (
-        <div className="text-red-500 mb-4">
-          Transaction failed: {tradingErrorMessage || 'Please try again.'}
+      {/* Main App Navigation */}
+      <nav className="app-nav">
+        <button 
+          onClick={() => setCurrentView('spin')}
+          className={currentView === 'spin' ? 'active' : ''}
+        >
+          Get Cats
+        </button>
+        <button 
+          onClick={() => setCurrentView('marketplace')}
+          className={currentView === 'marketplace' ? 'active' : ''}
+        >
+          Marketplace
+        </button>
+        <button 
+          onClick={() => setCurrentView('gallery')}
+          className={currentView === 'gallery' ? 'active' : ''}
+        >
+          My Gallery
+        </button>
+      </nav>
+
+      {/* Main Content Area */}
+      <main className="main-content">
+        {currentView === 'spin' && (
+          <CatCarousel 
+            onAddRandomCard={handleGetRandomCard}
+            isProcessing={isProcessing}
+            lastReceivedCard={lastReceivedCard}
+            isConnected={Boolean(currentAddress)}
+          />
+        )}
+        
+        {currentView === 'marketplace' && (
+          <Marketplace 
+            listings={listings}
+            createListing={createListing}
+            acceptListing={acceptListing}
+            cancelListing={cancelListing}
+            setOfferCardId={setOfferCardId}
+            setRequestCardId={setRequestCardId}
+            status={status}
+            currentAddress={currentAddress}
+            tradingErrorMessage={tradingErrorMessage}
+            isConnected={Boolean(currentAddress)}
+            isCardInActiveListing={isCardInActiveListing}
+          />
+        )}
+        
+        {currentView === 'gallery' && (
+          <Gallery 
+            inventory={inventory}
+            onAddRandomCard={handleGetRandomCard}
+            isConnected={Boolean(currentAddress)}
+          />
+        )}
+      </main>
+
+      {/* Error Messages */}
+      {inventoryStatus === 'Revert' && (
+        <div style={{ color: '#F87171', margin: '20px 0', textAlign: 'center', fontWeight: 'bold' }}>
+          Error: {errorMessage || 'Something went wrong. Please try again.'}
         </div>
       )}
     </div>
