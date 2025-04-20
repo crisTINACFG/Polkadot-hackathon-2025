@@ -37,31 +37,12 @@
 			"object": ""
 		},
 		"methodIdentifiers": {
-			"addCard(address,uint256)": "f9c775ea",
 			"hasCard(address,uint256,uint256)": "4dca8ce6",
 			"setTradingContract(address)": "5be6f2c7",
 			"transferCards(address,address,uint256,uint256)": "65352442"
 		}
 	},
 	"abi": [
-		{
-			"inputs": [
-				{
-					"internalType": "address",
-					"name": "to",
-					"type": "address"
-				},
-				{
-					"internalType": "uint256",
-					"name": "cardId",
-					"type": "uint256"
-				}
-			],
-			"name": "addCard",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
-		},
 		{
 			"inputs": [
 				{

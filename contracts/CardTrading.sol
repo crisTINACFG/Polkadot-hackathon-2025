@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 interface IInventoryManager {
-    function addCard(address to, uint cardId) external;
     function transferCards(address from, address to, uint cardId, uint amount) external;
     function hasCard(address user, uint cardId, uint amount) external view returns (bool);
     function setTradingContract(address _contract) external;
@@ -11,8 +10,8 @@ interface IInventoryManager {
 contract CardTrading {
     struct Listing {
         address seller;
-        uint offerCardId;
-        uint requestCardId;
+        uint8 offerCardId;
+        uint8 requestCardId;
         bool active;
     }
 
@@ -31,8 +30,8 @@ contract CardTrading {
         }
     }
 
-    function createListing(uint offerCardId, uint requestCardId) external {
-        require(offerCardId < 9 && requestCardId < 9, "Invalid card ID");
+    function createListing(uint8 offerCardId, uint8 requestCardId) external {
+        require(offerCardId < 17 && requestCardId < 17, "Invalid ID");
         require(inventory.hasCard(msg.sender, offerCardId, 1), "No card");
 
         listings.push(Listing({

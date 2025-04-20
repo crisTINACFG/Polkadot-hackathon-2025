@@ -32,14 +32,14 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "uint8",
 						"name": "offerCardId",
-						"type": "uint256"
+						"type": "uint8"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "uint8",
 						"name": "requestCardId",
-						"type": "uint256"
+						"type": "uint8"
 					}
 				],
 				"name": "createListing",
@@ -59,14 +59,14 @@
 								"type": "address"
 							},
 							{
-								"internalType": "uint256",
+								"internalType": "uint8",
 								"name": "offerCardId",
-								"type": "uint256"
+								"type": "uint8"
 							},
 							{
-								"internalType": "uint256",
+								"internalType": "uint8",
 								"name": "requestCardId",
-								"type": "uint256"
+								"type": "uint8"
 							},
 							{
 								"internalType": "bool",
@@ -111,14 +111,14 @@
 						"type": "address"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "uint8",
 						"name": "offerCardId",
-						"type": "uint256"
+						"type": "uint8"
 					},
 					{
-						"internalType": "uint256",
+						"internalType": "uint8",
 						"name": "requestCardId",
-						"type": "uint256"
+						"type": "uint8"
 					},
 					{
 						"internalType": "bool",
@@ -181,11 +181,11 @@
 	},
 	"sources": {
 		"CardTrading.sol": {
-			"keccak256": "0xeb24e4d552399fc89280b7ed6272d890b3c8737e1e77e57e91eb764e5edef340",
+			"keccak256": "0x6dbd80fbe747ec484237e8a7a052e57fa9d776b000c64188c007c531f24f4b23",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b414cd95d880656fbb8f1a33817c2333caa317c07a63ef4840403d7c071019d0",
-				"dweb:/ipfs/Qme19nRZk8TsS6mS2vcB3D4Sqg5H1pX3UmeWLW1kuLzGWB"
+				"bzz-raw://125991e81bafb04d65fe3ecc8b5842429b4ef62c9675027ec547d7f7b070c798",
+				"dweb:/ipfs/QmczAG6Je1sdeSzrEHWKK3CxGVTT6qAoU2VsjFjKhrtYDL"
 			]
 		}
 	},

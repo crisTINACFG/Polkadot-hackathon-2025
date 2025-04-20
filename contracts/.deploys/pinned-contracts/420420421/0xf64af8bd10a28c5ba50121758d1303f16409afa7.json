@@ -1,6 +1,6 @@
 {
   "name": "CardTrading",
-  "address": "0x1d1ed54ee5942095f3e3f68593941c462c3b7221",
+  "address": "0xf64af8bd10a28c5ba50121758d1303f16409afa7",
   "abi": [
     {
       "inputs": [
@@ -18,14 +18,14 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint8",
           "name": "offerCardId",
-          "type": "uint256"
+          "type": "uint8"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint8",
           "name": "requestCardId",
-          "type": "uint256"
+          "type": "uint8"
         }
       ],
       "name": "createListing",
@@ -56,14 +56,14 @@
               "type": "address"
             },
             {
-              "internalType": "uint256",
+              "internalType": "uint8",
               "name": "offerCardId",
-              "type": "uint256"
+              "type": "uint8"
             },
             {
-              "internalType": "uint256",
+              "internalType": "uint8",
               "name": "requestCardId",
-              "type": "uint256"
+              "type": "uint8"
             },
             {
               "internalType": "bool",
@@ -108,14 +108,14 @@
           "type": "address"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint8",
           "name": "offerCardId",
-          "type": "uint256"
+          "type": "uint8"
         },
         {
-          "internalType": "uint256",
+          "internalType": "uint8",
           "name": "requestCardId",
-          "type": "uint256"
+          "type": "uint8"
         },
         {
           "internalType": "bool",
@@ -141,5 +141,5 @@
     }
   ],
   "filePath": " - connect to localhost - /CardTrading.sol",
-  "pinnedAt": 1745114625375
+  "pinnedAt": 1745122218987
 }

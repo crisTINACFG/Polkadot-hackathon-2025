@@ -1,6 +1,6 @@
 {
   "name": "InventoryManager",
-  "address": "0xcce7ecb3cd989e8e936f27ec9858092fd521318f",
+  "address": "0x3426e2ed98fba77268999dde15a04f1f615f4426",
   "abi": [
     {
       "inputs": [
@@ -101,9 +101,9 @@
       "name": "getInventory",
       "outputs": [
         {
-          "internalType": "uint256[9]",
+          "internalType": "uint256[17]",
           "name": "",
-          "type": "uint256[9]"
+          "type": "uint256[17]"
         }
       ],
       "stateMutability": "view",
@@ -166,5 +166,5 @@
     }
   ],
   "filePath": " - connect to localhost - /InventoryManager.sol",
-  "pinnedAt": 1745114602944
+  "pinnedAt": 1745122183459
 }

@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract InventoryManager {
-    mapping(address => uint[9]) public cardInventory;
+    mapping(address => uint[17]) public cardInventory;
     
     // Add owner variable to track contract owner
     address public owner;
@@ -25,19 +25,19 @@ contract InventoryManager {
     // Anyone can add cards
     function addCard(address to, uint cardId) external {
         require(to != address(0), "Invalid address");
-        require(cardId < 9, "Invalid card ID");
+        require(cardId < 17, "Invalid card ID");
         cardInventory[to][cardId] += 1;
     }
 
     // Anyone can transfer cards - this is needed for the trading to work
     function transferCards(address from, address to, uint cardId, uint amount) external {
-        require(cardId < 9, "Invalid card ID");
+        require(cardId < 17, "Invalid card ID");
         require(cardInventory[from][cardId] >= amount, "Not enough cards");
         cardInventory[from][cardId] -= amount;
         cardInventory[to][cardId] += amount;
     }
 
-    function getInventory(address user) external view returns (uint[9] memory) {
+    function getInventory(address user) external view returns (uint[17] memory) {
         return cardInventory[user];
     }
 

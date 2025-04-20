@@ -63,9 +63,9 @@
 				"name": "getInventory",
 				"outputs": [
 					{
-						"internalType": "uint256[9]",
+						"internalType": "uint256[17]",
 						"name": "",
-						"type": "uint256[9]"
+						"type": "uint256[17]"
 					}
 				],
 				"stateMutability": "view",
@@ -206,11 +206,11 @@
 	},
 	"sources": {
 		"InventoryManager.sol": {
-			"keccak256": "0xa96683eb02a4779ce5c7f871c807d3d007f9bc4afcf1dbdf31c12dd0835d75aa",
+			"keccak256": "0x9adeb51126fbccda4fb072a82eef0d34ca86e5daa92f80e636fe5a6591a674fc",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://4f23b7d60ef85292d1264f9975535448099789264e2a59ea57730fb05d5d004a",
-				"dweb:/ipfs/QmdLtXzLqk64TSEXxLkyWAyrc1HWnBarTdq3LSBjt8NXY3"
+				"bzz-raw://991d723656b62025685e1e5c2e815261bcf88cee42d3e237c995a3feff051950",
+				"dweb:/ipfs/QmYFsm5oacZzDUTKgLqJR3KDhrGEJJh6upQhokSVKDyqA2"
 			]
 		}
 	},
