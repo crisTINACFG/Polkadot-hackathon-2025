@@ -56,6 +56,15 @@ contract CardTrading {
         listing.active = false;
     }
 
+    function cancelListing(uint listingId) external {
+        require(listingId < listings.length, "Invalid ID");
+        Listing storage listing = listings[listingId];
+        require(listing.active, "Inactive");
+        require(msg.sender == listing.seller, "Not seller");
+        
+        listing.active = false;
+    }
+
     function getAllListings() external view returns (Listing[] memory) {
         return listings;
     }

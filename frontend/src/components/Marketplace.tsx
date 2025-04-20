@@ -46,7 +46,7 @@ interface MarketplaceProps {
     requestCardId: number;
     active: boolean;
   }>;
-  createListing: () => void;
+  createListing: (offerCardId?: number, requestCardId?: number) => void;
   acceptListing: (index: number) => void;
   cancelListing: (index: number) => void;
   setOfferCardId: (id: number) => void;
@@ -76,9 +76,16 @@ export default function Marketplace({
   
   const handleCreateListing = (e: React.FormEvent) => {
     e.preventDefault();
-    setOfferCardId(Number(offerCard));
-    setRequestCardId(Number(requestCard));
-    createListing();
+    // Store the IDs in local variables
+    const offerCardId = Number(offerCard);
+    const requestCardId = Number(requestCard);
+    
+    // Update the state for future reference
+    setOfferCardId(offerCardId);
+    setRequestCardId(requestCardId);
+    
+    // Pass the IDs directly to createListing
+    createListing(offerCardId, requestCardId);
   };
 
   // Helper function to get rarity class based on card ID

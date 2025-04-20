@@ -56,7 +56,11 @@ export function useCardTrading(contractData: ContractData) {
         );
     }, [listings]);
 
-    const createListing = useCallback(async () => {
+    const createListing = useCallback(async (offerCardIdParam?: number, requestCardIdParam?: number) => {
+        // Use parameters if provided, otherwise fall back to state
+        const cardToOffer = offerCardIdParam !== undefined ? offerCardIdParam : offerCardId;
+        const cardToRequest = requestCardIdParam !== undefined ? requestCardIdParam : requestCardId;
+        
         if (window.ethereum) {
             setStatus(Status.Loading);
             setErrorMessage(null);
@@ -93,24 +97,55 @@ export function useCardTrading(contractData: ContractData) {
                 console.log("Signer address:", signerAddress);
                 
                 // Check if the card is already in an active listing
-                if (isCardInActiveListing(signerAddress, offerCardId)) {
+                if (isCardInActiveListing(signerAddress, cardToOffer)) {
                     setErrorMessage("This card is already offered in another active listing. Cancel your other listing first.");
                     setStatus(Status.Revert);
                     return;
                 }
                 
-                // Check if we have the card before trying to create a listing
+                // Create contract instance
                 console.log("Creating contract instance...");
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
-                console.log("Creating listing with offer:", offerCardId, "request:", requestCardId);
+                // First check if the user actually has the card they're trying to offer
+                try {
+                    // This checks with the inventory manager contract
+                    console.log("Checking if user owns the card:", cardToOffer);
+                    
+                    try {
+                        // Try direct method to get inventory manager address
+                        const inventoryManagerAddress = await contract.inventoryManager();
+                        
+                        if (inventoryManagerAddress) {
+                            const inventoryAbi = [
+                                "function hasCard(address user, uint256 cardId, uint256 amount) view returns (bool)"
+                            ];
+                            const inventoryContract = new Contract(inventoryManagerAddress, inventoryAbi, signer);
+                            const hasCard = await inventoryContract.hasCard(signerAddress, cardToOffer, 1);
+                            
+                            if (!hasCard) {
+                                setErrorMessage("You don't have the card you're trying to offer");
+                                setStatus(Status.Revert);
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Could not get inventory manager address:", err);
+                        // Continue anyway to maintain backward compatibility
+                    }
+                } catch (checkError) {
+                    console.error("Error checking card ownership:", checkError);
+                    // Continue anyway to maintain backward compatibility
+                }
+                
+                console.log("Creating listing with offer:", cardToOffer, "request:", cardToRequest);
                 
                 // Log gas estimate to check if transaction would succeed
                 try {
                     console.log("Estimating gas...");
                     const gasEstimate = await contract.createListing.estimateGas(
-                        offerCardId, 
-                        requestCardId
+                        cardToOffer, 
+                        cardToRequest
                     );
                     console.log("Gas estimate successful:", gasEstimate.toString());
                 } catch (estimateError: any) {
@@ -126,8 +161,8 @@ export function useCardTrading(contractData: ContractData) {
                 // Send the transaction
                 console.log("Sending transaction...");
                 const response: ContractTransactionResponse = await contract.createListing(
-                    offerCardId, 
-                    requestCardId
+                    cardToOffer, 
+                    cardToRequest
                 );
                 
                 console.log("Transaction sent with hash:", response.hash);
@@ -303,7 +338,19 @@ export function useCardTrading(contractData: ContractData) {
                 });
                 
                 if (accounts.length === 0) {
-                    throw new Error('No accounts found');
+                    console.log("No accounts found, requesting permissions...");
+                    await window.ethereum.request({ 
+                        method: 'wallet_requestPermissions',
+                        params: [{ eth_accounts: {} }]
+                    });
+                    
+                    const updatedAccounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    
+                    if (updatedAccounts.length === 0) {
+                        throw new Error('No accounts found after permission request');
+                    }
                 }
                 
                 const provider = new BrowserProvider(window.ethereum);
@@ -328,37 +375,76 @@ export function useCardTrading(contractData: ContractData) {
                 
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
-                // Call the contract method - in a real implementation, we would call a cancelListing
-                // function on the smart contract. For this example, we'll simulate it by marking
-                // the listing as inactive through the UI.
+                // Estimate gas to check if transaction would succeed
+                try {
+                    console.log("Estimating gas...");
+                    const gasEstimate = await contract.cancelListing.estimateGas(listingId);
+                    console.log("Gas estimate successful:", gasEstimate.toString());
+                } catch (estimateError: any) {
+                    console.error("Gas estimation failed:", estimateError);
+                    if (estimateError.message) {
+                        if (estimateError.message.includes("Listing inactive") || 
+                            estimateError.message.includes("Inactive")) {
+                            setErrorMessage("This listing is no longer active");
+                        } else if (estimateError.message.includes("Not seller")) {
+                            setErrorMessage("You can only cancel your own listings");
+                        } else {
+                            setErrorMessage("Transaction would fail: " + estimateError.message);
+                        }
+                        setStatus(Status.Revert);
+                        return;
+                    }
+                }
                 
-                // In a real implementation, you would add this function to the smart contract:
-                // function cancelListing(uint listingId) external {
-                //   require(listingId < listings.length, "Invalid ID");
-                //   Listing storage listing = listings[listingId];
-                //   require(listing.active, "Inactive");
-                //   require(msg.sender == listing.seller, "Not seller");
-                //   listing.active = false;
-                // }
+                // Send the transaction
+                console.log("Sending transaction to cancel listing:", listingId);
+                const response: ContractTransactionResponse = await contract.cancelListing(listingId);
+                
+                console.log("Transaction sent with hash:", response.hash);
+                
+                console.log("Waiting for transaction confirmation...");
+                const receipt = await response.wait();
+                console.log("Transaction receipt:", receipt);
+                
+                if (receipt === null) {
+                    setErrorMessage("Transaction failed - no receipt received");
+                    setStatus(Status.Revert);
+                    return;
+                }
                 
                 console.log("Listing cancelled successfully!");
                 setStatus(Status.Success);
                 
-                // Update the listings array to mark this listing as inactive
-                setListings(prevListings => 
-                    prevListings.map(l => 
-                        l.id === listingId ? { ...l, active: false } : l
-                    ).filter(l => l.active)
-                );
+                // Refresh listings after successful cancellation
+                await fetchListings();
             } catch (e: any) {
                 console.error("Error cancelling listing:", e);
                 
-                let error = e.message || 'Unknown error';
+                let error = 'Unknown error';
+                if (e.message) {
+                    if (e.message.includes('insufficient funds')) {
+                        error = 'Not enough ETH for gas';
+                    } else if (e.message.includes('user rejected')) {
+                        error = 'Transaction rejected by user';
+                    } else if (e.message.includes("Invalid ID")) {
+                        error = "Invalid listing ID";
+                    } else if (e.message.includes("Not seller")) {
+                        error = "You can only cancel your own listings";
+                    } else if (e.message.includes("Inactive")) {
+                        error = "This listing is already inactive";
+                    } else if (e.message.includes('execution reverted')) {
+                        error = 'Contract rejected the transaction';
+                    } else {
+                        error = e.message;
+                    }
+                }
+                
                 setErrorMessage(error);
+                console.log("Error details:", error);
                 setStatus(Status.Revert);
             }
         }
-    }, [listings, contractData.abi, contractData.address]);
+    }, [listings, contractData.abi, contractData.address, fetchListings]);
 
     return {
         status,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './CatCarousel.css';
 
 // Cat imports
@@ -43,12 +43,30 @@ const catImages = [
     { id: 14, name: 'Wizard', image: wizard, rarity: 'rare' }
 ];
 
+// Preload images to prevent glitchy appearance
+const preloadImages = () => {
+  catImages.forEach(cat => {
+    const img = new Image();
+    img.src = cat.image;
+  });
+};
+
 const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing, lastReceivedCard, isConnected }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [shouldSpin, setShouldSpin] = useState(false);
+  const [spinSpeed, setSpinSpeed] = useState(200);
+  const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const spinStepsRef = useRef(0);
+  const totalStepsRef = useRef(0);
+  const targetCardRef = useRef<number | null>(null);
+
+  // Preload all images when component mounts
+  useEffect(() => {
+    preloadImages();
+  }, []);
 
   useEffect(() => {
     if (showConfetti) {
@@ -66,27 +84,76 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
     }
   }, [isProcessing, lastReceivedCard, shouldSpin]);
 
+  // Cleanup effect to clear any spinning intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (spinIntervalRef.current) {
+        clearInterval(spinIntervalRef.current);
+      }
+    };
+  }, []);
+
   const startSpinAnimation = (finalCatId: number) => {
     setIsSpinning(true);
     
+    // Clear any existing intervals
+    if (spinIntervalRef.current) {
+      clearInterval(spinIntervalRef.current);
+    }
+    
     // Random number of spins (between 3-5 full rotations)
     const spins = Math.floor(Math.random() * 3) + 3;
-    const totalSteps = spins * catImages.length;
     
-    let currentStep = 0;
-    const spinInterval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % catImages.length);
-      currentStep++;
-      
-      if (currentStep >= totalSteps) {
-        clearInterval(spinInterval);
-        // Set the carousel to show the exact card we received
-        setCurrentIndex(finalCatId % catImages.length);
-        setSelectedCat(finalCatId);
-        setIsSpinning(false);
-        setShowConfetti(true);
+    // Store the total steps and target card for reference
+    totalStepsRef.current = spins * catImages.length + 
+      ((finalCatId - currentIndex + catImages.length) % catImages.length);
+    spinStepsRef.current = 0;
+    targetCardRef.current = finalCatId % catImages.length;
+    
+    // Start with a fast speed that gradually slows down
+    setSpinSpeed(80);
+    
+    // Start the spinning animation
+    spinStep();
+  };
+
+  const spinStep = () => {
+    // Check if we've completed the required steps
+    if (spinStepsRef.current >= totalStepsRef.current) {
+      // Set to final position
+      if (targetCardRef.current !== null) {
+        setCurrentIndex(targetCardRef.current);
+        setSelectedCat(targetCardRef.current);
       }
-    }, 80);
+      setIsSpinning(false);
+      setShowConfetti(true);
+      return;
+    }
+    
+    // Move to next card
+    setCurrentIndex(prev => (prev + 1) % catImages.length);
+    spinStepsRef.current++;
+    
+    // Calculate the next delay - slow down near the end
+    let nextDelay: number;
+    const progress = spinStepsRef.current / totalStepsRef.current;
+    
+    if (progress < 0.7) {
+      // Fast spinning for most of the animation
+      nextDelay = 80;
+    } else if (progress < 0.85) {
+      // Start slowing down
+      nextDelay = 120;
+    } else if (progress < 0.95) {
+      // Even slower
+      nextDelay = 180;
+    } else {
+      // Final slowdown
+      nextDelay = 250;
+    }
+    
+    // Schedule the next step with the calculated delay
+    spinIntervalRef.current = setTimeout(spinStep, nextDelay);
   };
 
   const handleSpin = async () => {
@@ -105,6 +172,9 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
       setShouldSpin(false);
     }
   };
+
+  // Add a dynamic className based on spinning state for CSS animations
+  const carouselTrackClass = `carousel-track ${isSpinning ? 'spinning' : ''}`;
 
   return (
     <div className="cat-carousel">
@@ -127,10 +197,9 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
       
       <div className="carousel-container">
         <div 
-          className="carousel-track"
+          className={carouselTrackClass}
           style={{ 
             transform: `translateX(-${currentIndex * 100}%)`,
-            transition: isSpinning ? 'transform 0.2s ease' : 'transform 0.5s ease'
           }}
         >
           {catImages.map((cat) => (
@@ -155,7 +224,7 @@ const CatCarousel: React.FC<CatCarouselProps> = ({ onAddRandomCard, isProcessing
 
       {selectedCat !== null && (
         <div className="selection-banner">
-          You got a {catImages.find(cat => cat.id === selectedCat % catImages.length)?.name || `Cat ${selectedCat}`}!
+          You got a {catImages.find(cat => cat.id === selectedCat)?.name || `Cat ${selectedCat}`}!
         </div>
       )}
     </div>

@@ -32,6 +32,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "listingId",
+						"type": "uint256"
+					}
+				],
+				"name": "cancelListing",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint8",
 						"name": "offerCardId",
 						"type": "uint8"
@@ -181,11 +194,11 @@
 	},
 	"sources": {
 		"CardTrading.sol": {
-			"keccak256": "0x6dbd80fbe747ec484237e8a7a052e57fa9d776b000c64188c007c531f24f4b23",
+			"keccak256": "0x2ef60e15560393780414f21c56a51e990ca08fcdf57e055ae8baa009457aa9d4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://125991e81bafb04d65fe3ecc8b5842429b4ef62c9675027ec547d7f7b070c798",
-				"dweb:/ipfs/QmczAG6Je1sdeSzrEHWKK3CxGVTT6qAoU2VsjFjKhrtYDL"
+				"bzz-raw://6fe5716dc983950ecb5c2deae1dd2d39b0296f901e389615d328ba6cd4492f84",
+				"dweb:/ipfs/QmebnfdvWaghu5JAihnjfHdfRGKiQQZbAid5h6VD621SYQ"
 			]
 		}
 	},

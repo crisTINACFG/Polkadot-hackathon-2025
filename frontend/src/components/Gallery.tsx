@@ -22,6 +22,7 @@ interface GalleryProps {
   inventory: number[];
   onAddRandomCard: () => Promise<void>;
   isConnected: boolean;
+  setCurrentView: (view: 'spin' | 'marketplace' | 'gallery') => void;
 }
 
 const catImages = [
@@ -49,7 +50,7 @@ const getRarity = (cardId: number): string => {
   return 'common';
 };
 
-export default function Gallery({ inventory, onAddRandomCard, isConnected }: GalleryProps) {
+export default function Gallery({ inventory, onAddRandomCard, isConnected, setCurrentView }: GalleryProps) {
   // Create a map of owned cards and their quantities
   const ownedCardMap = inventory.reduce((acc, quantity, index) => {
     if (quantity > 0) {
@@ -98,7 +99,7 @@ export default function Gallery({ inventory, onAddRandomCard, isConnected }: Gal
         <div className="empty-gallery-message">
           <p>You don't have any cats in your collection yet.</p>
           {isConnected ? (
-            <button onClick={onAddRandomCard}>Get Your First Cat!</button>
+            <button onClick={() => setCurrentView('spin')}>Get Your First Cat!</button>
           ) : (
             <p>Connect your wallet to start collecting!</p>
           )}

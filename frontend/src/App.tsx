@@ -9,8 +9,8 @@ import Gallery from "./components/Gallery";
 import { Sparkles } from "./components/Sparkles";
 
 // Update to the correctly deployed addresses in lowercase to match export
-const CARD_TRADING_ADDRESS = "f64af8bd10a28c5ba50121758d1303f16409afa7";
-const INVENTORY_MANAGER_ADDRESS = "3426e2ed98fba77268999dde15a04f1f615f4426";
+const CARD_TRADING_ADDRESS = "3e904ff32afbac3450da5689a1238e7d9752a98a";
+const INVENTORY_MANAGER_ADDRESS = "48a1fb9ff1b9f414283e6512ec3ebf38fd70b7a0";
 
 function App() {
   if (!(CARD_TRADING_ADDRESS in contracts) || !(INVENTORY_MANAGER_ADDRESS in contracts)) {
@@ -155,6 +155,7 @@ function App() {
             inventory={inventory}
             onAddRandomCard={handleGetRandomCard}
             isConnected={Boolean(currentAddress)}
+            setCurrentView={setCurrentView}
           />
         )}
       </main>

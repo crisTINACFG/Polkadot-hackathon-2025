@@ -1,6 +1,6 @@
 {
   "name": "CardTrading",
-  "address": "0xf64af8bd10a28c5ba50121758d1303f16409afa7",
+  "address": "0x3e904ff32afbac3450da5689a1238e7d9752a98a",
   "abi": [
     {
       "inputs": [
@@ -11,6 +11,19 @@
         }
       ],
       "name": "acceptListing",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "listingId",
+          "type": "uint256"
+        }
+      ],
+      "name": "cancelListing",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -141,5 +154,5 @@
     }
   ],
   "filePath": " - connect to localhost - /CardTrading.sol",
-  "pinnedAt": 1745122218987
+  "pinnedAt": 1745129510395
 }
