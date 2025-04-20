@@ -7,6 +7,9 @@ export function useInventoryManager(contractData: ContractData) {
     const [inventory, setInventory] = useState<number[]>(Array(9).fill(0));
     const [hasCard, setHasCard] = useState<boolean>(false);
     const [status, setStatus] = useState<'Initial' | 'Loading' | 'Success' | 'Revert'>('Initial');
+    const [lastReceivedCard, setLastReceivedCard] = useState<number | null>(null);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const [currentAddress, setCurrentAddress] = useState<string | null>(null);
 
     const getInventory = useCallback(async (userAddress: string) => {
         if (ethersProvider !== null) {
@@ -41,70 +44,96 @@ export function useInventoryManager(contractData: ContractData) {
     }, [contractData.abi, contractData.address]);
 
     const addRandomCard = useCallback(async () => {
-        if (ethersProvider !== null) {
+        if (ethersProvider !== null && !isProcessing && currentAddress) {
             const provider = ethersProvider;
+            setIsProcessing(true);
             setStatus('Loading');
             try {
                 const signer = await provider.getSigner();
                 const contract = new Contract(contractData.address, contractData.abi, signer);
-                const userAddress = await signer.getAddress();
                 
                 // Generate random card ID (0-8)
                 const randomCardId = Math.floor(Math.random() * 9);
                 
-                // Optimistically update the UI
-                const newInventory = [...inventory];
-                newInventory[randomCardId] += 1;
-                setInventory(newInventory);
-                
                 // Send the transaction
                 const response: ContractTransactionResponse = await contract.addCard(
-                    userAddress,
+                    currentAddress,
                     randomCardId
                 );
                 
-                // Update status to success as soon as transaction is sent
-                setStatus('Success');
+                // Wait for transaction confirmation
+                await response.wait();
                 
-                // Refresh inventory in the background
-                response.wait().then(() => {
-                    getInventory(userAddress);
-                }).catch((e) => {
-                    console.error(e);
-                    // Revert optimistic update if transaction failed
-                    getInventory(userAddress);
-                });
+                // Update UI after transaction is confirmed
+                await getInventory(currentAddress);
+                setLastReceivedCard(randomCardId);
+                setStatus('Success');
                 
             } catch (e) {
                 console.error(e);
                 setStatus('Revert');
-                // Revert optimistic update if transaction failed
-                if (window.ethereum) {
-                    // @ts-ignore - window.ethereum type is not properly defined
-                    const userAddress = window.ethereum.selectedAddress;
-                    if (userAddress) {
-                        getInventory(userAddress);
-                    }
+                // Refresh inventory to ensure it's in sync with blockchain
+                if (currentAddress) {
+                    await getInventory(currentAddress);
                 }
+            } finally {
+                setIsProcessing(false);
             }
         }
-    }, [contractData.abi, contractData.address, getInventory, inventory]);
+    }, [contractData.abi, contractData.address, getInventory, isProcessing, currentAddress]);
 
-    // Initialize inventory when the component mounts
+    // Handle wallet connection and account changes
     useEffect(() => {
+        const handleAccountsChanged = async (accounts: string[]) => {
+            if (accounts.length > 0) {
+                const newAddress = accounts[0];
+                setCurrentAddress(newAddress);
+                await getInventory(newAddress);
+            } else {
+                setCurrentAddress(null);
+                setInventory(Array(9).fill(0));
+            }
+        };
+
+        const handleChainChanged = () => {
+            window.location.reload();
+        };
+
         if (window.ethereum) {
             // @ts-ignore - window.ethereum type is not properly defined
-            const userAddress = window.ethereum.selectedAddress;
-            if (userAddress) {
-                getInventory(userAddress);
-            }
+            window.ethereum.on('accountsChanged', handleAccountsChanged);
+            // @ts-ignore - window.ethereum type is not properly defined
+            window.ethereum.on('chainChanged', handleChainChanged);
+
+            // Get initial account
+            // @ts-ignore - window.ethereum type is not properly defined
+            window.ethereum.request({ method: 'eth_accounts' })
+                .then((accounts: string[]) => {
+                    if (accounts.length > 0) {
+                        const address = accounts[0];
+                        setCurrentAddress(address);
+                        getInventory(address);
+                    }
+                });
         }
+
+        return () => {
+            if (window.ethereum) {
+                // @ts-ignore - window.ethereum type is not properly defined
+                window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                // @ts-ignore - window.ethereum type is not properly defined
+                window.ethereum.removeListener('chainChanged', handleChainChanged);
+            }
+        };
     }, [getInventory]);
 
     return {
         inventory,
         hasCard,
         status,
+        lastReceivedCard,
+        isProcessing,
+        currentAddress,
         getInventory,
         checkHasCard,
         addRandomCard

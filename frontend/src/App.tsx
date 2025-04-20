@@ -5,7 +5,7 @@ import { useInventoryManager } from "./hooks/useInventoryManager";
 import "./App.css";
 
 const CARD_TRADING_ADDRESS = "39bd199fbf6f4f0f584e71ed6c5617791750e60b";
-const INVENTORY_MANAGER_ADDRESS = "ac953a8f481cef16961174d4d5dbac47b0035a0a"; // Replace with actual address
+const INVENTORY_MANAGER_ADDRESS = "ac953a8f481cef16961174d4d5dbac47b0035a0a";
 
 function App() {
   if (!(CARD_TRADING_ADDRESS in contracts) || !(INVENTORY_MANAGER_ADDRESS in contracts)) {
@@ -17,48 +17,68 @@ function App() {
   const cardTradingData = contracts[CARD_TRADING_ADDRESS];
   const inventoryManagerData = contracts[INVENTORY_MANAGER_ADDRESS];
   const [userAddress, setUserAddress] = useState<string>("");
+  const [flashingCard, setFlashingCard] = useState<number | null>(null);
 
   const { status, listings, setOfferCardId, setRequestCardId, createListing, acceptListing, fetchListings } = useCardTrading(cardTradingData);
-  const { inventory, hasCard, status: inventoryStatus, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
+  const { inventory, hasCard, status: inventoryStatus, lastReceivedCard, isProcessing, currentAddress, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
 
-  // Fetch initial data and user address
+  // Handle flashing animation
   useEffect(() => {
-    if (window.ethereum) {
-      // @ts-ignore - window.ethereum type is not properly defined
-      const address = window.ethereum.selectedAddress;
-      if (address) {
-        setUserAddress(address);
-        getInventory(address);
-      }
+    if (lastReceivedCard !== null) {
+      setFlashingCard(lastReceivedCard);
+      const timer = setTimeout(() => {
+        setFlashingCard(null);
+      }, 1000); // Match this with the animation duration
+      return () => clearTimeout(timer);
     }
+  }, [lastReceivedCard]);
+
+  // Fetch listings on mount
+  useEffect(() => {
     fetchListings();
-  }, []);
+  }, [fetchListings]);
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Card Trading DApp</h1>
+      
+      {/* Wallet Status */}
+      <div className="mb-4">
+        {currentAddress ? (
+          <p className="text-sm text-gray-600">Connected: {currentAddress}</p>
+        ) : (
+          <p className="text-sm text-red-600">Please connect your wallet</p>
+        )}
+      </div>
 
       {/* Inventory Section */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <h2 className="font-semibold">Your Inventory</h2>
           <button
-            className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+            className={`px-4 py-2 rounded ${
+              isProcessing || !currentAddress
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-purple-500 hover:bg-purple-600'
+            } text-white`}
             onClick={addRandomCard}
-            disabled={inventoryStatus === 'Loading'}
+            disabled={isProcessing || !currentAddress}
           >
-            {inventoryStatus === 'Loading' ? 'Getting Card...' : 'Get Random Card'}
+            {!currentAddress ? 'Connect Wallet' : (isProcessing ? 'Processing...' : 'Get Random Card')}
           </button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {inventory.map((quantity, cardId) => (
-            <div key={cardId} className="p-2 border rounded">
+            <div 
+              key={cardId} 
+              className={`p-2 border rounded ${lastReceivedCard === cardId && inventoryStatus === 'Success' ? 'flash-card' : ''}`}
+            >
               <p>Card {cardId}: <strong>{quantity}</strong></p>
             </div>
           ))}
         </div>
-        {inventoryStatus === 'Success' && (
-          <div className="text-green-500 mt-2">Got a new random card!</div>
+        {inventoryStatus === 'Success' && lastReceivedCard !== null && (
+          <div className="text-green-500 mt-2">Got Card {lastReceivedCard}!</div>
         )}
         {inventoryStatus === 'Revert' && (
           <div className="text-red-500 mt-2">Failed to get a card. Please try again.</div>

@@ -19,3 +19,13 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+
+@keyframes flash {
+  0% { background-color: #ffffff; }
+  50% { background-color: #4ade80; }
+  100% { background-color: #ffffff; }
+}
+
+.flash-card {
+  animation: flash 1s ease-in-out;
+}
