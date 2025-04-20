@@ -20,7 +20,7 @@ contract InventoryManager {
         tradingContract = _contract;
     }
 
-    function addCard(address to, uint cardId) external onlyTradingContract {
+    function addCard(address to, uint cardId) external {
         require(to != address(0), "Invalid address");
         require(cardId < 9, "Invalid card ID");
         cardInventory[to][cardId] += 1;

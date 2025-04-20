@@ -193,11 +193,11 @@
 	},
 	"sources": {
 		"InventoryManager.sol": {
-			"keccak256": "0x818b2fe8125bea3def361da8f72c367f8e084e019ecf4de3f274c961823a8f54",
+			"keccak256": "0xaf9acc902e6edeca428fc5cc1ccc696217e0a73523e97319f6c27252e8cb93e2",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://b2c0907050d9a00745a2b0de8ddfc0db667f55d1e92c5bc53199d3fdb8e40698",
-				"dweb:/ipfs/QmTTpqs5y8D6BbWTkg9EpZEF5DGEnQzV8NkfarBKxHwoJP"
+				"bzz-raw://333b0cf58fd72fcc7d4dcc69a4d01466176714c01808c2bbad6ef667d5155378",
+				"dweb:/ipfs/QmRxP72pnQushssHrd34QuaKuSmK4PhtiHVHKWaBhXNZhL"
 			]
 		}
 	},

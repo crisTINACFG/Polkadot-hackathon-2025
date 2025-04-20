@@ -1,6 +1,6 @@
 {
   "name": "InventoryManager",
-  "address": "0xac953a8f481cef16961174d4d5dbac47b0035a0a",
+  "address": "0xd20eac04dfab9def61791248d2644c086cf73db6",
   "abi": [
     {
       "inputs": [
@@ -153,5 +153,5 @@
     }
   ],
   "filePath": " - connect to localhost - /InventoryManager.sol",
-  "pinnedAt": 1745108051913
+  "pinnedAt": 1745113137903
 }

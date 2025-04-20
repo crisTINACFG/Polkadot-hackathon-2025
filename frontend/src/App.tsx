@@ -4,8 +4,9 @@ import { useCardTrading, Status } from "./hooks/useCardTrading";
 import { useInventoryManager } from "./hooks/useInventoryManager";
 import "./App.css";
 
-const CARD_TRADING_ADDRESS = "39bd199fbf6f4f0f584e71ed6c5617791750e60b";
-const INVENTORY_MANAGER_ADDRESS = "ac953a8f481cef16961174d4d5dbac47b0035a0a";
+// Update to the correctly deployed addresses in lowercase to match export
+const CARD_TRADING_ADDRESS = "d56e31f4fdeef444eb3b26b4d80d498ae098923f";
+const INVENTORY_MANAGER_ADDRESS = "d20eac04dfab9def61791248d2644c086cf73db6";
 
 function App() {
   if (!(CARD_TRADING_ADDRESS in contracts) || !(INVENTORY_MANAGER_ADDRESS in contracts)) {
@@ -20,23 +21,30 @@ function App() {
   const [flashingCard, setFlashingCard] = useState<number | null>(null);
 
   const { status, listings, setOfferCardId, setRequestCardId, createListing, acceptListing, fetchListings } = useCardTrading(cardTradingData);
-  const { inventory, hasCard, status: inventoryStatus, lastReceivedCard, isProcessing, currentAddress, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
+  const { inventory, hasCard, status: inventoryStatus, lastReceivedCard, isProcessing, currentAddress, errorMessage, connectWallet, getInventory, checkHasCard, addRandomCard } = useInventoryManager(inventoryManagerData);
 
-  // Handle flashing animation
-  useEffect(() => {
-    if (lastReceivedCard !== null) {
-      setFlashingCard(lastReceivedCard);
-      const timer = setTimeout(() => {
-        setFlashingCard(null);
-      }, 1000); // Match this with the animation duration
-      return () => clearTimeout(timer);
-    }
-  }, [lastReceivedCard]);
-
-  // Fetch listings on mount
+  // Refresh listings when current address changes
   useEffect(() => {
     fetchListings();
-  }, [fetchListings]);
+  }, [fetchListings, currentAddress]);
+
+  // Handle manual wallet connection
+  const handleConnectWallet = async () => {
+    try {
+      await connectWallet();
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    }
+  };
+
+  // Handle getting a random card
+  const handleGetRandomCard = async () => {
+    try {
+      await addRandomCard();
+    } catch (error) {
+      console.error("Error getting random card:", error);
+    }
+  };
 
   return (
     <div className="p-4">
@@ -47,7 +55,12 @@ function App() {
         {currentAddress ? (
           <p className="text-sm text-gray-600">Connected: {currentAddress}</p>
         ) : (
-          <p className="text-sm text-red-600">Please connect your wallet</p>
+          <button
+            onClick={handleConnectWallet}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            Connect Wallet
+          </button>
         )}
       </div>
 
@@ -61,7 +74,7 @@ function App() {
                 ? 'bg-gray-400 cursor-not-allowed'
                 : 'bg-purple-500 hover:bg-purple-600'
             } text-white`}
-            onClick={addRandomCard}
+            onClick={handleGetRandomCard}
             disabled={isProcessing || !currentAddress}
           >
             {!currentAddress ? 'Connect Wallet' : (isProcessing ? 'Processing...' : 'Get Random Card')}
@@ -81,7 +94,9 @@ function App() {
           <div className="text-green-500 mt-2">Got Card {lastReceivedCard}!</div>
         )}
         {inventoryStatus === 'Revert' && (
-          <div className="text-red-500 mt-2">Failed to get a card. Please try again.</div>
+          <div className="text-red-500 mt-2">
+            Failed to get a card: {errorMessage || 'Please try again.'}
+          </div>
         )}
       </div>
 
@@ -113,7 +128,7 @@ function App() {
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={createListing}
-          disabled={status === Status.Loading}
+          disabled={status === Status.Loading || !currentAddress}
         >
           {status === Status.Loading ? "Creating..." : "Create Listing"}
         </button>
@@ -124,7 +139,7 @@ function App() {
         <h2 className="font-semibold mb-2">Active Listings</h2>
         <div className="grid gap-4">
           {listings.map((listing, index) => {
-            const isUserListing = listing.seller.toLowerCase() === userAddress.toLowerCase();
+            const isUserListing = currentAddress && listing.seller.toLowerCase() === currentAddress.toLowerCase();
             return (
               <div key={index} className="p-4 border rounded">
                 <p>Seller: {listing.seller}</p>
@@ -137,7 +152,7 @@ function App() {
                       : "bg-green-500 text-white hover:bg-green-600"
                   }`}
                   onClick={() => !isUserListing && acceptListing(index)}
-                  disabled={status === Status.Loading || isUserListing}
+                  disabled={status === Status.Loading || isUserListing || !currentAddress}
                 >
                   {isUserListing ? "Your Listing" : (status === Status.Loading ? "Processing..." : "Accept Trade")}
                 </button>

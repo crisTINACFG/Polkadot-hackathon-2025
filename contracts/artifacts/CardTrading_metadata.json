@@ -168,11 +168,11 @@
 	},
 	"sources": {
 		"CardTrading.sol": {
-			"keccak256": "0x946b78733ad545939303cf108ef80a070316dffa98a519150fa17c3802ec9ee0",
+			"keccak256": "0xff282ae294ebc65c77bf84cea1d01dba6ab72663c0fba91b098a95b144494ab4",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1fdbb3194e0551eb1c3a9b0aa8f38f55c292d48581e7a11677f69427317396a6",
-				"dweb:/ipfs/QmTzbc6rcWV5TJGy5Ka5nFrSGRroL4RN9B2aUDh2heRPdc"
+				"bzz-raw://7dd6254d68cf18adac1a9a8a2de0b70ad8a33d7529c5c24824265d8c85eb3ea3",
+				"dweb:/ipfs/QmPXCezBYQZkRvCx98uNEQdsExfjJTYis9wLAWYjVz8K1m"
 			]
 		}
 	},

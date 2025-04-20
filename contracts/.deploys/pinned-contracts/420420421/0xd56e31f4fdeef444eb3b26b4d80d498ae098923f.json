@@ -1,6 +1,6 @@
 {
   "name": "CardTrading",
-  "address": "0x39bd199fbf6f4f0f584e71ed6c5617791750e60b",
+  "address": "0xd56e31f4fdeef444eb3b26b4d80d498ae098923f",
   "abi": [
     {
       "inputs": [
@@ -128,5 +128,5 @@
     }
   ],
   "filePath": " - connect to localhost - /CardTrading.sol",
-  "pinnedAt": 1745108092778
+  "pinnedAt": 1745113219458
 }

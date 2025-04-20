@@ -16,7 +16,6 @@ contract CardTrading {
     }
 
     Listing[] public listings;
-
     IInventoryManager public inventory;
 
     constructor(address inventoryAddress) {
@@ -25,7 +24,7 @@ contract CardTrading {
 
     function createListing(uint offerCardId, uint requestCardId) external {
         require(offerCardId < 9 && requestCardId < 9, "Invalid card ID");
-        require(inventory.hasCard(msg.sender, offerCardId, 1), "You don't have the offered card");
+        require(inventory.hasCard(msg.sender, offerCardId, 1), "No card");
 
         listings.push(Listing({
             seller: msg.sender,
@@ -36,12 +35,11 @@ contract CardTrading {
     }
 
     function acceptListing(uint listingId) external {
-        require(listingId < listings.length, "Invalid listing ID");
+        require(listingId < listings.length, "Invalid ID");
         Listing storage listing = listings[listingId];
-        require(listing.active, "Listing inactive");
-        require(msg.sender != listing.seller, "Can't accept your own listing");
-
-        require(inventory.hasCard(msg.sender, listing.requestCardId, 1), "You don't have the requested card");
+        require(listing.active, "Inactive");
+        require(msg.sender != listing.seller, "Own listing");
+        require(inventory.hasCard(msg.sender, listing.requestCardId, 1), "No card");
 
         // Swap cards
         inventory.transferCards(msg.sender, listing.seller, listing.requestCardId, 1);

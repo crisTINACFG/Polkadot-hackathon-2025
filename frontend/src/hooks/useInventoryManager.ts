@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from "react";
-import { Contract, ContractTransactionResponse } from "ethers";
+import { Contract, ContractTransactionResponse, BrowserProvider } from "ethers";
 import { ContractData } from "contracts";
 import { ethersProvider } from "../ethersProvider";
 
@@ -10,69 +10,168 @@ export function useInventoryManager(contractData: ContractData) {
     const [lastReceivedCard, setLastReceivedCard] = useState<number | null>(null);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [currentAddress, setCurrentAddress] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const getInventory = useCallback(async (userAddress: string) => {
-        if (ethersProvider !== null) {
-            const provider = ethersProvider;
+        if (window.ethereum) {
             try {
+                const provider = new BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
+                const signerAddress = await signer.getAddress();
+                
+                // Make sure we're using the current wallet
+                if (signerAddress.toLowerCase() !== userAddress.toLowerCase()) {
+                    console.log('Addresses dont match, fetching new signer');
+                    await window.ethereum.request({ 
+                        method: 'wallet_requestPermissions',
+                        params: [{ eth_accounts: {} }]
+                    });
+                    return;
+                }
+                
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
                 const userInventory = await contract.getInventory(userAddress);
-                // Convert the inventory array to numbers and update state
                 const inventoryArray = userInventory.map((num: any) => Number(num));
                 setInventory(inventoryArray);
             } catch (e) {
-                console.error(e);
+                console.error('Error getting inventory:', e);
             }
         }
     }, [contractData.abi, contractData.address]);
 
-    const checkHasCard = useCallback(async (userAddress: string, cardId: number, amount: number) => {
-        if (ethersProvider !== null) {
-            const provider = ethersProvider;
+    const connectWallet = useCallback(async () => {
+        if (window.ethereum) {
             try {
+                // Request account access with explicit permissions
+                await window.ethereum.request({ 
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                });
+                
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length > 0) {
+                    const address = accounts[0];
+                    setCurrentAddress(address);
+                    await getInventory(address);
+                }
+            } catch (error) {
+                console.error('Error connecting to wallet:', error);
+            }
+        }
+    }, [getInventory]);
+
+    const checkHasCard = useCallback(async (userAddress: string, cardId: number, amount: number) => {
+        if (window.ethereum) {
+            try {
+                const provider = new BrowserProvider(window.ethereum);
                 const signer = await provider.getSigner();
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
                 const hasCardResult = await contract.hasCard(userAddress, cardId, amount);
                 setHasCard(hasCardResult);
             } catch (e) {
-                console.error(e);
+                console.error('Error checking card:', e);
             }
         }
     }, [contractData.abi, contractData.address]);
 
     const addRandomCard = useCallback(async () => {
-        if (ethersProvider !== null && !isProcessing && currentAddress) {
-            const provider = ethersProvider;
+        if (!currentAddress) {
+            await connectWallet();
+            return;
+        }
+
+        if (!isProcessing && window.ethereum) {
             setIsProcessing(true);
             setStatus('Loading');
+            setErrorMessage(null);
+            
             try {
+                // Force MetaMask to show accounts selection
+                await window.ethereum.request({ 
+                    method: 'wallet_requestPermissions',
+                    params: [{ eth_accounts: {} }]
+                });
+                
+                // Get latest accounts
+                const accounts = await window.ethereum.request({ 
+                    method: 'eth_requestAccounts' 
+                });
+                
+                if (accounts.length === 0) {
+                    throw new Error('No accounts found');
+                }
+                
+                const selectedAddress = accounts[0];
+                setCurrentAddress(selectedAddress);
+                
+                // Check wallet balance
+                const provider = new BrowserProvider(window.ethereum);
+                const balance = await provider.getBalance(selectedAddress);
+                console.log('Wallet balance:', balance.toString());
+                
                 const signer = await provider.getSigner();
+                const signerAddress = await signer.getAddress();
+                console.log('Signer address:', signerAddress);
+                console.log('Selected address:', selectedAddress);
+                
+                // Create contract instance
                 const contract = new Contract(contractData.address, contractData.abi, signer);
                 
                 // Generate random card ID (0-8)
                 const randomCardId = Math.floor(Math.random() * 9);
+                console.log('Adding card:', randomCardId, 'for address:', selectedAddress);
+                
+                // Try to estimate gas first to check if the transaction would succeed
+                try {
+                    const gasEstimate = await contract.addCard.estimateGas(selectedAddress, randomCardId);
+                    console.log('Gas estimate successful:', gasEstimate.toString());
+                } catch (estimateError: any) {
+                    console.error('Gas estimation failed:', estimateError);
+                    throw new Error(`Transaction would fail: ${estimateError.message}`);
+                }
                 
                 // Send the transaction
                 const response: ContractTransactionResponse = await contract.addCard(
-                    currentAddress,
+                    selectedAddress,
                     randomCardId
                 );
                 
-                // Wait for transaction confirmation
+                console.log('Transaction sent with hash:', response.hash);
+                
                 await response.wait();
+                console.log('Transaction confirmed');
                 
                 // Update UI after transaction is confirmed
-                await getInventory(currentAddress);
+                await getInventory(selectedAddress);
                 setLastReceivedCard(randomCardId);
                 setStatus('Success');
                 
-            } catch (e) {
-                console.error(e);
+            } catch (e: any) {
+                console.error('Error adding random card:', e);
                 setStatus('Revert');
-                // Refresh inventory to ensure it's in sync with blockchain
+                
+                // Extract useful error information
+                let error = 'Unknown error';
+                if (e.message) {
+                    if (e.message.includes('insufficient funds')) {
+                        error = 'Not enough ETH for gas';
+                    } else if (e.message.includes('user rejected')) {
+                        error = 'Transaction rejected by user';
+                    } else if (e.message.includes('execution reverted')) {
+                        error = 'Contract rejected the transaction';
+                    } else {
+                        error = e.message;
+                    }
+                }
+                
+                setErrorMessage(error);
+                console.log('Error details:', error);
+                
                 if (currentAddress) {
                     await getInventory(currentAddress);
                 }
@@ -80,13 +179,14 @@ export function useInventoryManager(contractData: ContractData) {
                 setIsProcessing(false);
             }
         }
-    }, [contractData.abi, contractData.address, getInventory, isProcessing, currentAddress]);
+    }, [contractData.abi, contractData.address, getInventory, isProcessing, currentAddress, connectWallet]);
 
     // Handle wallet connection and account changes
     useEffect(() => {
         const handleAccountsChanged = async (accounts: string[]) => {
             if (accounts.length > 0) {
                 const newAddress = accounts[0];
+                console.log('Account changed to:', newAddress);
                 setCurrentAddress(newAddress);
                 await getInventory(newAddress);
             } else {
@@ -96,6 +196,7 @@ export function useInventoryManager(contractData: ContractData) {
         };
 
         const handleChainChanged = () => {
+            console.log('Chain changed, reloading...');
             window.location.reload();
         };
 
@@ -111,6 +212,7 @@ export function useInventoryManager(contractData: ContractData) {
                 .then((accounts: string[]) => {
                     if (accounts.length > 0) {
                         const address = accounts[0];
+                        console.log('Initial account:', address);
                         setCurrentAddress(address);
                         getInventory(address);
                     }
@@ -134,6 +236,8 @@ export function useInventoryManager(contractData: ContractData) {
         lastReceivedCard,
         isProcessing,
         currentAddress,
+        errorMessage,
+        connectWallet,
         getInventory,
         checkHasCard,
         addRandomCard
