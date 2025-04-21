@@ -1,4 +1,4 @@
-beca# 🐱 miauD - Blockchain Cat Collectibles
+🐱 miauD - Blockchain Cat Collectibles
 
 miauD is a decentralized blockchain application (dApp) that implements a rarity-weighted spin-based distribution mechanism for digital asset acquisition. The platform employs a tiered probability system where assets are stratified by rarity classifications (Common, Rare, Legendary), with higher-tier assets having proportionally lower acquisition rates. Users can obtain, manage, and trade these non-fungible collectible assets (cat cards) through a transparent and secure smart contract architecture.
 
